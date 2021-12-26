@@ -31,5 +31,5 @@ def test_02():
 
 
 if __name__ == '__main__':
-
-	globals()[sys.argv[1]]()
+	test_02()
+	# globals()[sys.argv[1]]()

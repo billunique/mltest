@@ -4,13 +4,14 @@ import uiautomator2 as u2
 import logging
 import system_common_op as sysop
 from time import sleep
+import os
 import sys
 import unittest
 
 
 d = u2.connect()
 
-def get_train_version():
+def get_train_version() -> dict:
 
 	#only take the first 2 matches for parsing and comparing.
 	version_info = d.shell("dumpsys package com.google.android.modulemetadata | grep -m 2 -E 'versionName|versionCode'").output
@@ -31,7 +32,9 @@ def get_train_version():
 	return dict_version_info
 
 
-def get_module_list():
+def get_module_list() -> list:
+
+	# return sample: ['com.google.android.ext.services', 'com.google.android.permissioncontroller', 'com.google.android.captiveportallogin', 'com.google.android.modulemetadata', 'com.google.android.networkstack']
 
 	module_info = d.shell("pm get-moduleinfo").output
 	print("\nraw current moudules info:\n")
@@ -47,7 +50,32 @@ def get_module_list():
 	return list_module_pkg
 
 
-def get_build_info():
+def get_train_module_and_version() -> dict:
+
+	list_module = get_module_list()
+	output1 = os.popen("adb shell cmd package list packages --show-versioncode").readlines()
+	output2 = os.popen("adb shell cmd package list packages --show-versioncode --apex-only").readlines()
+	output_list = output1 + output2
+	matched_line = []
+	for l in list_module:
+		for line in output_list:
+			if l in line:
+				matched_line.append(line.strip())
+	print("\ntrain modules with their versionCode:\n")
+	for _ in matched_line:
+		print(_)
+
+	print("\ntrain modules with their versionCode in pure mode:\n")
+
+	matched_line_lite = [(x.split(":")[1].replace(" versionCode", "") + ":" + x.split(":")[2]) for x in matched_line]
+	for _ in matched_line_lite:
+		print(_)
+	dict_module_and_versioncode = dict(pair.split(":") for pair in matched_line_lite)
+	# print(dict_module_and_versioncode)
+	return dict_module_and_versioncode
+
+
+def get_os_build_info():
 	
 	build_info = d.shell("getprop | grep 'build.description'").output
 	print(build_info)
