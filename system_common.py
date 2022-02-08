@@ -6,46 +6,56 @@ import logging
 from time import sleep
 import uiautomator2 as u2
 from uiautomator2 import UiObjectNotFoundError
-
-from mobly import base_test
 from mobly.controllers import android_device as ad
 
+# define d here, or inside the function, or pass it as adbdevice object to function, all work.
+# because u2.connect() is to get the adb device (connection) object, not to create a new one.
 d = u2.connect()
-os_version = d.device_info.get('version')
-PASSWORD = "G00gl3test"
+
+
+# Better to open via command line.
+# -------------------------------------------------
+# open_play_account_menu()
+# is_play_latest(), i.e, to Google Play Settings.
+# -------------------------------------------------
 
 
 def to_Settings():
 
-	d.shell("am start com.android.settings/com.android.settings.Settings")
+	os.system("adb shell am start com.android.settings/com.android.settings.Settings")
 
 
 def to_Settings_Security():
 
-	d.shell("am start -a android.settings.SECURITY_SETTINGS")
+	os.system("adb shell am start -a android.settings.SECURITY_SETTINGS")
 
 
 def stop_Settings_activity():
 	''' force close activity to keep env clean. '''
-	d.shell("am force-stop com.android.settings")
+	os.system("adb shell am force-stop com.android.settings")
+
+
+def to_Settings_PaA():
+	''' to Settings - Passwords & accounts. '''
+	os.system("adb shell am start -a android.settings.SYNC_SETTINGS")
 
 
 def screen_stay_on():
 
-	d.shell("settings put global stay_on_while_plugged_in 7")
+	os.system("adb shell settings put global stay_on_while_plugged_in 7")
 	# the unit is milliseconds, set device goes to sleep after 1 hours' inactivity.
-	d.shell("settings put system screen_off_timeout 3600000")
+	os.system("adb shell settings put system screen_off_timeout 3600000")
 	# set screen lock to be None.
-	d.shell("locksettings set-disabled true")
+	os.system("adb shell locksettings set-disabled true")
 
 
 def enable_testharness():
 
-	d.shell("cmd testharness enable")
+	os.system("adb shell cmd testharness enable")
 
-def install_mobly_apk():
 
-	apk_dir="./mobly-bundled-snippets-debug.apk"
+def install_apk(apk_dir):
+
 	os.system('adb install -r -d -g ' + apk_dir)
 
 
@@ -59,114 +69,30 @@ def connect_to_wifi(ssid, pswd):
 	# d1.mbs.wifiConnectSimple("GoogleGuestPSK-Legacy", "pUp3EkaP")
 
 
-
-def minutemaid_login(account_name, pswd):
-
-	d.implicitly_wait(18.0)
-	if d.wait_activity(".auth.uiflows.minutemaid.MinuteMaidActivity", timeout=30):
-		# redundant click and wait to improve the success rate.
-		# d(resourceId="identifierId").click()
-		# sleep(1)
-		# d.send_keys(account_name)
-		d(resourceId="identifierId").send_keys(account_name)
-		if not d(focused=True).exists(timeout=3):
-			sleep(6)
-			d.xpath('//*[@resource-id="com.google.android.gms:id/sud_layout_content"]/android.webkit.WebView[1]/android.webkit.WebView[1]/android.view.View[3]/android.view.View[1]/android.view.View[1]/android.view.View[3]').click()
-		sleep(1)
-		# d.send_keys(account_name)
-		d(focused=True).set_text(account_name)
-		sleep(1)
-		d(text="Next").click()
-		sleep(2)
-		# d.send_keys(pswd, clear=True)
-		d(focused=True).set_text(pswd)
-		d(text="Next").click()
-		# agree the TOS
-		d(text="I agree").click()
-		# if d.wait_activity(".setupservices.GoogleServicesActivity", timeout=10): # even not fresh login also trigger this Activity, just no More and Accept dialog.
-		# if d(text="More").wait(3):
-		if d(text="More").exists(timeout=5):
-			d(text="More").click()
-			d(text="Accept").click()
+def get_os_build_info():
+	
+	build_info = os.popen("adb shell getprop | grep 'build.description'").read()
+	print("\nAndroid build: ", build_info)
+	return build_info
 
 
-def add_google_account(account_name, pswd):
+def trigger_crash_app(package_name):
 
-	d.implicitly_wait(10.0)
-	attempts = 3
-	for i in range(attempts):
-		try:
-			# or adb shell am start -n com.android.settings/.accounts.AddAccountSettings
-			# ! or adb shell sm start -n com.google.android.gms/.auth.uiflows.addaccount.AccountIntroActivity 
-			d.shell("am start -a android.settings.ADD_ACCOUNT_SETTINGS")
-			d(resourceId="android:id/title", text="Google").click()
-			minutemaid_login(account_name, pswd)
-
-		except UiObjectNotFoundError:
-			if i < attempts -1: # i steps from 0
-				continue
-			else:
-				raise
-		break
-
-	# deal with the screen that only displays for the first fresh login.
-	# d1 = ad.AndroidDevice()
-	# d1.load_snippet('mbs', 'com.google.android.mobly.snippet.bundled')
-	# if len(d1.mbs.listAccounts()) == 1: # So the account is the first one in this device.
-	# 	if d.wait_activity(".setupservices.GoogleServicesActivity", timeout=30):
-	# 		d(text="More").click()
-	# 		d(text="Accept").click()
-
-	stop_Settings_activity()
+	os.system("adb shell am crash " + package_name)
 
 
-def remove_google_account(account_name):
+def chimera_debug():
 
-	# open Passwords & accounts
-	d.shell("am start -a android.settings.SYNC_SETTINGS")
-	# d(scrollable=True).fling()
-	d(textContains=account_name).click()
-	d(text="Remove account").click()
-	# confirm
-	d(resourceId="android:id/button1").click()
-	stop_Settings_activity()
+	os.system("adb shell am start -n com.google.android.gms/com.google.android.gms.chimera.debug.ChimeraDebugActivity")
 
 
-def test_add_remove_account():
-	add_google_account("wx.test2", PASSWORD)
-	add_google_account("wx.test1", PASSWORD)
-	add_google_account("wx.test3", PASSWORD)
-	# remove_google_account("wx.test1")
 
 
-def test_remove_all_google_accounts():
-	d.shell("am start -a android.settings.SYNC_SETTINGS")
-	sleep(2)
-	while d(textContains='gmail.com'):
-		d(textContains='gmail.com').click()
-		d(text="Remove account").click()
-		# confirm
-		d(resourceId="android:id/button1").click()
-		stop_Settings_activity()
-		d.shell("am start -a android.settings.SYNC_SETTINGS")
-		sleep(2)
-		continue
-	else:
-		stop_Settings_activity()
 
+######################################
+# Below functions are not in use.
+######################################
 
-def detect_if_device_connected():
-
-	while True:
-	    sleep(2)
-	    print("waiting for device to be connected...")
-	    adb_devices_line = os.popen('adb devices |grep device |wc -l').read().strip()
-	    if int(adb_devices_line) > 1:
-	        sleep(10)
-	        break
-
-
-# # Deprecated
 # def to_Settings():
 
 # 		
@@ -204,6 +130,8 @@ def to_Settings_item(item_name):
 
 def reset_device():
 
+	d = u2.connect()
+	os_version = d.device_info.get('version')
 	d.unlock()
 	to_Settings_item("System")
 	if os_version == '11':
@@ -222,6 +150,7 @@ def reset_device():
 
 def setup_wizard_dealer(account_name, pswd):
 
+	d = u2.connect()
 	d(resourceId="com.google.android.pixel.setupwizard:id/start").click()
 	d(text="Skip").click()
 	# setup wifi, connect to GoogleGuestPSK
@@ -258,8 +187,9 @@ def setup_wizard_dealer(account_name, pswd):
 		d(text="Skip").click()
 
 
-def open_usb_debug():
+def open_usb_debug(adbdevice):
 
+	d = adbdevice
 	to_Settings_item("About phone")
 	d(scrollable=True).scroll.toEnd()
 	for i in range(1, 8):
@@ -269,24 +199,26 @@ def open_usb_debug():
 		d.press("back")
 
 
-def disable_screen_lock():
+def disable_screen_lock(adbdevice):
 
+	d = adbdevice
 	to_Settings_item("Security")
 	d(scrollable=True).scroll.to(text="Screen lock")
 	d(text="Screen lock").click()
 	d(resourceId="android:id/title", text="None").click()
 	# back to desktop to clean the ui interface cache.
-	for i in range(1, 4):
+	for i in range(4):
 		d.press("back")
 
-def setup_screen_timeout():
+def setup_screen_timeout(adbdevice):
 
+	d = adbdevice
 	to_Settings_item("Display")
 	d(resourceId="android:id/title", text="Screen timeout").click()
 	d.xpath('//*[@resource-id="com.android.settings:id/recycler_view"]/android.widget.LinearLayout[7]/android.widget.LinearLayout[1]/android.widget.RadioButton[1]').click()
 	d(resourceId="com.android.systemui:id/back").click()
 	# back to desktop to clean the ui interface cache.
-	for i in range(1, 4):
+	for i in range(4):
 		d.press("back")
 
 
@@ -299,6 +231,11 @@ def clean_and_setup_device():
 	open_usb_debug()
 
 
+def test_d_conflict():
+	open_usb_debug(u2.connect())
+	disable_screen_lock(u2.connect())
+	setup_screen_timeout(u2.connect())
+
 
 
 if __name__ == '__main__':
@@ -310,11 +247,6 @@ if __name__ == '__main__':
 	# connect_to_wifi()
 	# screen_stay_on()
 	# test_remove_all_google_accounts()
-
-	# reset_device()
 	# setup_wizard_dealer("wx.test1", "G00gl3test")
 	# to_Settings_item("Display")
-	# disable_screen_lock()
-	# setup_screen_timeout()
 	# open_usb_debug()
-	# clean_and_setup_device()

@@ -443,7 +443,7 @@
     <a class="sidebar-toggle d-flex mr-2">
         <i class="hamburger align-self-center"></i>
     </a>
-    <h1 style="margin-bottom: 0px; color: azure;">MobileHarness</h1>
+    <h1 style="margin-bottom: 0px; color: azure;">Xgallant</h1>
     <div class="navbar-collapse collapse">
         <ul class="navbar-nav ml-auto">
             <h3 style="float: right; color: azure;"> Mainline Update Test Report</h3>
@@ -464,17 +464,17 @@
                                 
                                 <tr>
                                     <td> Start Time</td>
-                                    <td class="text-right">2021-12-15 11:32:26</td>
+                                    <td class="text-right">2021-12-28 20:38:36</td>
                                 </tr>
                                 
                                 <tr>
                                     <td> Duration</td>
-                                    <td class="text-right">0:10:32.467358</td>
+                                    <td class="text-right">0:02:09.366361</td>
                                 </tr>
                                 
                                 <tr>
                                     <td> Status</td>
-                                    <td class="text-right">Passed:14 Failed:1 Errors:2 Skipped:1</td>
+                                    <td class="text-right">Passed:4 Failed:1</td>
                                 </tr>
                                 
                                 <tr>
@@ -528,43 +528,82 @@
                     </tr>
                 </thead>
                 
-<tr class='errorClass'>
-    <td>ManualUpdateTestCase</td>
+<tr class='failClass'>
+    <td>SideloadModulesTestCase</td>
     <td>
-    Verify Manual Update when device on Wi-Fi.
+    Verify update on OEM devices via sideloading moduels. 
     </td>
     <td></td>
-    <td>12</td>
-    <td>9</td>
+    <td>5</td>
+    <td>4</td>
     <td>1</td>
-    <td>2</td>
-    <td><a href="javascript:showClassDetail('c1.1',12)">Detail</a></td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c1.1',5)">Detail</a></td>
     <td>&nbsp;</td>
 </tr>
 
 <tr id='pt1.1.1' class='hiddenRow'>
     <td class='passCase'>
-        <div class='testcase'>test_01_enable_testharness</div>
+        <div class='testcase'>test_03_train_get_version</div>
     </td>
     <td style="color: #495057">
         <div></div>
     </td>
     <td style="color: #495057">
-        <div>150.13 s</div>
+        <div>0.18 s</div>
     </td>
-    <td colspan='5' align='center'>pass</td>
+    <td colspan='5' align='center'>
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.1.1')" >
+        pass</a>
+    <div id='div_pt1.1.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.1.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        pt1.1.1: 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+mainline_update_test.py SideloadModulesTestCase test_03_train_get_version
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+head =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*  mainline_update_test.py SideloadModulesTestCase get_train_version  =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+
+
+raw version info:
+
+    versionCode=311318024 minSdk=31 targetSdk=31
+    versionName=2022-01-01 S+
+
+version info of this build in dict:
+
+{'versionCode': '311318024', 'minSdk': '31', 'targetSdk': '31', 'versionName': '2022-01-01'}
+
+tail =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#  mainline_update_test.py SideloadModulesTestCase get_train_version  =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+mainline_update_test.py SideloadModulesTestCase test_03_train_get_version
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+    </td>
     <td></td>
 </tr>
 
 <tr id='pt1.1.2' class='hiddenRow'>
     <td class='passCase'>
-        <div class='testcase'>test_02_calm_the_screen</div>
+        <div class='testcase'>test_04_train_get_module_list</div>
     </td>
     <td style="color: #495057">
         <div></div>
     </td>
     <td style="color: #495057">
-        <div>3.83 s</div>
+        <div>0.12 s</div>
     </td>
     <td colspan='5' align='center'>
     <!--css div popup start-->
@@ -576,38 +615,59 @@
            [x]</a>
         </div>
         <pre>
-        pt1.1.2: [I 211215 11:34:57 init:156] uiautomator2 version: 2.16.8
-[I 211215 11:34:57 init:346] Install minicap, minitouch
-[D 211215 11:34:57 init:59] Use cached assets: /Users/xiawang/.uiautomator2/cache/minitouch-f7a806902f/minitouch
-[D 211215 11:34:57 init:238] Push to /data/local/tmp/minitouch:0755
-[I 211215 11:34:57 init:352] Android R (sdk:30) has no minicap resource
-[D 211215 11:34:57 init:256] apk-debug package-info: None
-[D 211215 11:34:57 init:257] apk-debug-test package-info: None
-[I 211215 11:34:57 init:359] Install com.github.uiautomator, com.github.uiautomator.test 2.3.3
-[D 211215 11:34:57 init:167] Shell: ('pm', 'uninstall', 'com.github.uiautomator')
-[D 211215 11:34:57 init:167] Shell: ('pm', 'uninstall', 'com.github.uiautomator.test')
-[D 211215 11:34:57 init:59] Use cached assets: /Users/xiawang/.uiautomator2/cache/app-uiautomator.apk-d3f17174fb/app-uiautomator.apk
-[D 211215 11:34:57 init:238] Push to /data/local/tmp/app-uiautomator.apk:0644
-[D 211215 11:34:57 init:167] Shell: ('pm', 'install', '-r', '-t', '/data/local/tmp/app-uiautomator.apk')
-[I 211215 11:34:57 init:331] - app-uiautomator.apk installed
-[D 211215 11:34:57 init:59] Use cached assets: /Users/xiawang/.uiautomator2/cache/app-uiautomator-test.apk-652bf9e13c/app-uiautomator-test.apk
-[D 211215 11:34:57 init:238] Push to /data/local/tmp/app-uiautomator-test.apk:0644
-[D 211215 11:34:58 init:167] Shell: ('pm', 'install', '-r', '-t', '/data/local/tmp/app-uiautomator-test.apk')
-[I 211215 11:34:58 init:331] - app-uiautomator-test.apk installed
-[D 211215 11:34:58 init:167] Shell: ('/data/local/tmp/atx-agent', 'server', '--stop')
-[I 211215 11:34:58 init:339] Install atx-agent 0.10.0
-[D 211215 11:34:58 init:59] Use cached assets: /Users/xiawang/.uiautomator2/cache/atx-agent_0.10.0_linux_armv7.tar.gz-cf3333ae7b/atx-agent_0.10.0_linux_armv7.tar.gz
-[D 211215 11:34:58 init:238] Push to /data/local/tmp/atx-agent:0755
-[D 211215 11:34:58 init:167] Shell: ('/data/local/tmp/atx-agent', 'server', '--nouia', '-d', '--addr', '127.0.0.1:7912')
-[I 211215 11:34:58 init:374] Check atx-agent version
-[D 211215 11:34:58 init:387] Forward: local:tcp:54010 -&gt; remote:tcp:7912
-[D 211215 11:34:59 init:387] Forward: local:tcp:54010 -&gt; remote:tcp:7912
-[D 211215 11:34:59 init:390] atx-agent version 0.10.0
-[D 211215 11:34:59 init:393] device wlan ip: wlan0 have no ip address
-Successfully init AdbDevice(serial=898X06LJT)
-[D 211215 11:34:59 init:387] Forward: local:tcp:54010 -&gt; remote:tcp:7912
-[D 211215 11:34:59 init:390] atx-agent version 0.10.0
-[D 211215 11:34:59 init:393] device wlan ip: wlan0 have no ip address
+        pt1.1.2: 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+mainline_update_test.py SideloadModulesTestCase test_04_train_get_module_list
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+head =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*  mainline_update_test.py SideloadModulesTestCase get_module_list  =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+
+
+list current modules in package names:
+
+['com.google.android.ext.services', 'com.google.android.permissioncontroller', 'com.google.android.captiveportallogin', 'com.google.android.modulemetadata', 'com.google.android.networkstack', 'com.google.android.documentsui', 'com.google.mainline.telemetry', 'com.google.android.networkstack.permissionconfig', 'com.google.android.conscrypt', 'com.google.android.adbd', 'com.google.android.ipsec', 'com.google.android.cellbroadcast', 'com.google.android.extservices', 'com.google.android.media', 'com.google.android.mediaprovider', 'com.google.android.os.statsd', 'com.google.android.neuralnetworks', 'com.google.android.resolv', 'com.google.android.media.swcodec', 'com.google.android.scheduling', 'com.google.android.sdkext', 'com.google.android.tzdata3', 'com.google.android.tethering', 'com.google.mainline.primary.libs', 'com.google.android.wifi', 'com.google.android.permission', 'com.google.android.art'] 
+
+
+raw current moudules info:
+
+ModuleInfo{3763f22 Android Services} packageName: com.google.android.ext.services
+ModuleInfo{6e16db3 Permission Controller} packageName: com.google.android.permissioncontroller
+ModuleInfo{8da6f70 Captive Portal Login} packageName: com.google.android.captiveportallogin
+ModuleInfo{395c2e9 Module Metadata} packageName: com.google.android.modulemetadata
+ModuleInfo{15d2b6e Network Stack} packageName: com.google.android.networkstack
+ModuleInfo{cfb320f Documents UI} packageName: com.google.android.documentsui
+ModuleInfo{6cf129c Telemetry TVP} packageName: com.google.mainline.telemetry
+ModuleInfo{e7ea4a5 Network Permission Configuration} packageName: com.google.android.networkstack.permissionconfig
+ModuleInfo{eb4907a Conscrypt} packageName: com.google.android.conscrypt
+ModuleInfo{f42e02b ADBd} packageName: com.google.android.adbd
+ModuleInfo{c08bc88 IPSec} packageName: com.google.android.ipsec
+ModuleInfo{259e621 Cell Broadcast} packageName: com.google.android.cellbroadcast
+ModuleInfo{2eb3a46 Android Services (APEX)} packageName: com.google.android.extservices
+ModuleInfo{20d5407 Media} packageName: com.google.android.media
+ModuleInfo{3b11934 Media Provider} packageName: com.google.android.mediaprovider
+ModuleInfo{a4dc35d Statsd} packageName: com.google.android.os.statsd
+ModuleInfo{b90b4d2 Neural Networks API} packageName: com.google.android.neuralnetworks
+ModuleInfo{2129a3 DNS Resolver} packageName: com.google.android.resolv
+ModuleInfo{fe094a0 Media Software Codec} packageName: com.google.android.media.swcodec
+ModuleInfo{3a83859 Device Scheduling} packageName: com.google.android.scheduling
+ModuleInfo{da14c1e SDK Extensions} packageName: com.google.android.sdkext
+ModuleInfo{12bcff Time zone data} packageName: com.google.android.tzdata3
+ModuleInfo{9ca5acc Tethering} packageName: com.google.android.tethering
+ModuleInfo{89b0115 Dynamic Common Libraries} packageName: com.google.mainline.primary.libs
+ModuleInfo{f920c2a WiFi} packageName: com.google.android.wifi
+ModuleInfo{3602a1b Permission} packageName: com.google.android.permission
+ModuleInfo{8a857b8 Android Runtime} packageName: com.google.android.art
+ 
+
+
+tail =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#  mainline_update_test.py SideloadModulesTestCase get_module_list  =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+mainline_update_test.py SideloadModulesTestCase test_04_train_get_module_list
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 
         </pre>
     </div>
@@ -618,150 +678,171 @@ Successfully init AdbDevice(serial=898X06LJT)
 
 <tr id='pt1.1.3' class='hiddenRow'>
     <td class='passCase'>
-        <div class='testcase'>test_03_introduce_mobly</div>
+        <div class='testcase'>test_05_train_get_module_and_version</div>
     </td>
     <td style="color: #495057">
         <div></div>
     </td>
     <td style="color: #495057">
-        <div>0.3 s</div>
-    </td>
-    <td colspan='5' align='center'>pass</td>
-    <td></td>
-</tr>
-
-<tr id='pt1.1.4' class='hiddenRow'>
-    <td class='passCase'>
-        <div class='testcase'>test_04_connect_to_wifi</div>
-    </td>
-    <td style="color: #495057">
-        <div></div>
-    </td>
-    <td style="color: #495057">
-        <div>6.48 s</div>
-    </td>
-    <td colspan='5' align='center'>pass</td>
-    <td></td>
-</tr>
-
-<tr id='et1.1.5' class='none'>
-    <td class='errorCase'>
-        <div class='testcase'>test_05_play_signin</div>
-    </td>
-    <td style="color: #495057">
-        <div></div>
-    </td>
-    <td style="color: #495057">
-        <div>119.87 s</div>
+        <div>0.29 s</div>
     </td>
     <td colspan='5' align='center'>
     <!--css div popup start-->
-    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_et1.1.5')" >
-        error</a>
-    <div id='div_et1.1.5' class="popup_window">
-        <div style='text-align: right; color:red;cursor:pointer'>
-        <a onfocus='this.blur();' onclick="document.getElementById('div_et1.1.5').style.display = 'none' " >
-           [x]</a>
-        </div>
-        <pre>
-        et1.1.5: [I 211215 11:35:07 init:156] uiautomator2 version: 2.16.8
-[D 211215 11:35:08 init:295] Real version: [0, 10, 0], Expect version: [0, 10, 0]
-[D 211215 11:35:08 init:256] apk-debug package-info: {'package_name': 'com.github.uiautomator', 'version_name': '2.3.3', 'version_code': '2003003', 'flags': ['DEBUGGABLE', 'HAS_CODE', 'ALLOW_CLEAR_USER_DATA', 'ALLOW_BACKUP'], 'first_install_time': datetime.datetime(2021, 12, 15, 11, 34, 58), 'last_update_time': datetime.datetime(2021, 12, 15, 11, 34, 58), 'signature': 'ae17cd86], past signatures:['}
-[D 211215 11:35:08 init:257] apk-debug-test package-info: {'package_name': 'com.github.uiautomator.test', 'version_name': '', 'version_code': '', 'flags': ['DEBUGGABLE', 'HAS_CODE', 'ALLOW_CLEAR_USER_DATA', 'ALLOW_BACKUP'], 'first_install_time': datetime.datetime(2021, 12, 15, 11, 34, 58), 'last_update_time': datetime.datetime(2021, 12, 15, 11, 34, 58), 'signature': 'ae17cd86], past signatures:['}
-[D 211215 11:35:08 init:167] Shell: ('/data/local/tmp/atx-agent', 'server', '--nouia', '-d', '--addr', '127.0.0.1:7912')
-[D 211215 11:35:08 init:387] Forward: local:tcp:54352 -&gt; remote:tcp:7912
-WARNING:retry.api:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')), retrying in 0.5 seconds...
-[D 211215 11:35:08 init:387] Forward: local:tcp:54352 -&gt; remote:tcp:7912
-[D 211215 11:35:08 init:390] atx-agent version 0.10.0
-[D 211215 11:35:08 init:393] device wlan ip: fe80::5888:25ff:fed7:24e4
-/Users/xiawang/Library/Python/3.8/lib/python/site-packages/uiautomator2/__init__.py:1687: Warning: set FastInputIME failed. use "d(focused=True).set_text instead"
-  warnings.warn(
-Traceback (most recent call last):
-  File "mainline_update_test.py", line 72, in test_05_play_signin
-    psc.play_login(TEST_ACCOUNT, PASSWORD)
-  File "/Users/xiawang/Downloads/mainline_test/play_store_common.py", line 52, in play_login
-    sysop.minutemaid_login(account_name, pswd)
-  File "/Users/xiawang/Downloads/mainline_test/system_common_op.py", line 76, in minutemaid_login
-    d(text="I agree").click()
-  File "/Users/xiawang/Library/Python/3.8/lib/python/site-packages/uiautomator2/_selector.py", line 150, in click
-    self.must_wait(timeout=timeout)
-  File "/Users/xiawang/Library/Python/3.8/lib/python/site-packages/uiautomator2/_selector.py", line 345, in must_wait
-    raise UiObjectNotFoundError({'code': -32002, 'data': str(self.selector), 'method': 'wait'})
-uiautomator2.exceptions.UiObjectNotFoundError: -32002 Client error: &lt;&gt; data: Selector [text='I agree'], method: None
-
-        </pre>
-    </div>
-    <!--css div popup end-->
-    </td>
-    <td></td>
-</tr>
-
-<tr id='et1.1.6' class='none'>
-    <td class='errorCase'>
-        <div class='testcase'>test_06_play_check_version</div>
-    </td>
-    <td style="color: #495057">
-        <div></div>
-    </td>
-    <td style="color: #495057">
-        <div>25.76 s</div>
-    </td>
-    <td colspan='5' align='center'>
-    <!--css div popup start-->
-    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_et1.1.6')" >
-        error</a>
-    <div id='div_et1.1.6' class="popup_window">
-        <div style='text-align: right; color:red;cursor:pointer'>
-        <a onfocus='this.blur();' onclick="document.getElementById('div_et1.1.6').style.display = 'none' " >
-           [x]</a>
-        </div>
-        <pre>
-        et1.1.6: Traceback (most recent call last):
-  File "mainline_update_test.py", line 77, in test_06_play_check_version
-    psc.check_if_latest()
-  File "/Users/xiawang/Downloads/mainline_test/play_store_common.py", line 80, in check_if_latest
-    d(text="Settings").click()
-  File "/Users/xiawang/Library/Python/3.8/lib/python/site-packages/uiautomator2/_selector.py", line 150, in click
-    self.must_wait(timeout=timeout)
-  File "/Users/xiawang/Library/Python/3.8/lib/python/site-packages/uiautomator2/_selector.py", line 345, in must_wait
-    raise UiObjectNotFoundError({'code': -32002, 'data': str(self.selector), 'method': 'wait'})
-uiautomator2.exceptions.UiObjectNotFoundError: -32002 Client error: &lt;&gt; data: Selector [text='Settings'], method: None
-
-        </pre>
-    </div>
-    <!--css div popup end-->
-    </td>
-    <td></td>
-</tr>
-
-<tr id='pt1.1.7' class='hiddenRow'>
-    <td class='passCase'>
-        <div class='testcase'>test_07_train_get_version</div>
-    </td>
-    <td style="color: #495057">
-        <div></div>
-    </td>
-    <td style="color: #495057">
-        <div>0.3 s</div>
-    </td>
-    <td colspan='5' align='center'>
-    <!--css div popup start-->
-    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.1.7')" >
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.1.3')" >
         pass</a>
-    <div id='div_pt1.1.7' class="popup_window">
+    <div id='div_pt1.1.3' class="popup_window">
         <div style='text-align: right; color:red;cursor:pointer'>
-        <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.1.7').style.display = 'none' " >
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.1.3').style.display = 'none' " >
            [x]</a>
         </div>
         <pre>
-        pt1.1.7: raw version info:
+        pt1.1.3: 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+mainline_update_test.py SideloadModulesTestCase test_05_train_get_module_and_version
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-    versionCode=310005800 minSdk=29 targetSdk=31
-    versionName=2021-09-01
 
-version info of this build in dict:
+head =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*  mainline_update_test.py SideloadModulesTestCase get_train_module_and_version  =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
-{'versionCode': '310005800', 'minSdk': '29', 'targetSdk': '31', 'versionName': '2021-09-01'}
+
+head =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*  mainline_update_test.py SideloadModulesTestCase get_module_list  =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+
+
+list current modules in package names:
+
+['com.google.android.ext.services', 'com.google.android.permissioncontroller', 'com.google.android.captiveportallogin', 'com.google.android.modulemetadata', 'com.google.android.networkstack', 'com.google.android.documentsui', 'com.google.mainline.telemetry', 'com.google.android.networkstack.permissionconfig', 'com.google.android.conscrypt', 'com.google.android.adbd', 'com.google.android.ipsec', 'com.google.android.cellbroadcast', 'com.google.android.extservices', 'com.google.android.media', 'com.google.android.mediaprovider', 'com.google.android.os.statsd', 'com.google.android.neuralnetworks', 'com.google.android.resolv', 'com.google.android.media.swcodec', 'com.google.android.scheduling', 'com.google.android.sdkext', 'com.google.android.tzdata3', 'com.google.android.tethering', 'com.google.mainline.primary.libs', 'com.google.android.wifi', 'com.google.android.permission', 'com.google.android.art'] 
+
+
+raw current moudules info:
+
+ModuleInfo{3763f22 Android Services} packageName: com.google.android.ext.services
+ModuleInfo{6e16db3 Permission Controller} packageName: com.google.android.permissioncontroller
+ModuleInfo{8da6f70 Captive Portal Login} packageName: com.google.android.captiveportallogin
+ModuleInfo{395c2e9 Module Metadata} packageName: com.google.android.modulemetadata
+ModuleInfo{15d2b6e Network Stack} packageName: com.google.android.networkstack
+ModuleInfo{cfb320f Documents UI} packageName: com.google.android.documentsui
+ModuleInfo{6cf129c Telemetry TVP} packageName: com.google.mainline.telemetry
+ModuleInfo{e7ea4a5 Network Permission Configuration} packageName: com.google.android.networkstack.permissionconfig
+ModuleInfo{eb4907a Conscrypt} packageName: com.google.android.conscrypt
+ModuleInfo{f42e02b ADBd} packageName: com.google.android.adbd
+ModuleInfo{c08bc88 IPSec} packageName: com.google.android.ipsec
+ModuleInfo{259e621 Cell Broadcast} packageName: com.google.android.cellbroadcast
+ModuleInfo{2eb3a46 Android Services (APEX)} packageName: com.google.android.extservices
+ModuleInfo{20d5407 Media} packageName: com.google.android.media
+ModuleInfo{3b11934 Media Provider} packageName: com.google.android.mediaprovider
+ModuleInfo{a4dc35d Statsd} packageName: com.google.android.os.statsd
+ModuleInfo{b90b4d2 Neural Networks API} packageName: com.google.android.neuralnetworks
+ModuleInfo{2129a3 DNS Resolver} packageName: com.google.android.resolv
+ModuleInfo{fe094a0 Media Software Codec} packageName: com.google.android.media.swcodec
+ModuleInfo{3a83859 Device Scheduling} packageName: com.google.android.scheduling
+ModuleInfo{da14c1e SDK Extensions} packageName: com.google.android.sdkext
+ModuleInfo{12bcff Time zone data} packageName: com.google.android.tzdata3
+ModuleInfo{9ca5acc Tethering} packageName: com.google.android.tethering
+ModuleInfo{89b0115 Dynamic Common Libraries} packageName: com.google.mainline.primary.libs
+ModuleInfo{f920c2a WiFi} packageName: com.google.android.wifi
+ModuleInfo{3602a1b Permission} packageName: com.google.android.permission
+ModuleInfo{8a857b8 Android Runtime} packageName: com.google.android.art
+ 
+
+
+tail =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#  mainline_update_test.py SideloadModulesTestCase get_module_list  =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+
+
+detailed train modules with their versionCode:
+
+package:com.google.android.ext.services versionCode:311313000
+package:com.google.android.permissioncontroller versionCode:311311000
+package:com.google.android.captiveportallogin versionCode:310911010
+package:com.google.android.modulemetadata versionCode:311318024
+package:com.google.android.networkstack.tethering versionCode:31
+package:com.google.android.networkstack.tethering.overlay versionCode:31
+package:com.google.android.networkstack versionCode:311313000
+package:com.google.android.networkstack.permissionconfig versionCode:300000000
+package:com.google.android.documentsui.theme.pixel versionCode:1
+package:com.google.android.documentsui versionCode:310851020
+package:com.google.mainline.telemetry versionCode:311300014
+package:com.google.android.networkstack.permissionconfig versionCode:300000000
+package:com.google.android.conscrypt versionCode:310911000
+package:com.google.android.adbd versionCode:311310002
+package:com.google.android.ipsec versionCode:311310000
+package:com.google.android.cellbroadcastservice versionCode:300000000
+package:com.google.android.cellbroadcastreceiver versionCode:300000000
+package:com.google.android.cellbroadcast versionCode:311311000
+package:com.google.android.extservices versionCode:311313000
+package:com.google.android.media versionCode:311311000
+package:com.google.android.mediaprovider versionCode:311313010
+package:com.google.android.media.swcodec versionCode:311311000
+package:com.google.android.mediaprovider versionCode:311313010
+package:com.google.android.os.statsd versionCode:311210000
+package:com.google.android.neuralnetworks versionCode:311310000
+package:com.google.android.resolv versionCode:311313000
+package:com.google.android.media.swcodec versionCode:311311000
+package:com.google.android.scheduling versionCode:310733000
+package:com.google.android.sdkext versionCode:310912000
+package:com.google.android.tzdata3 versionCode:311311000
+package:com.google.android.tetheringentitlement versionCode:104
+package:com.google.android.tethering versionCode:311314000
+package:com.google.mainline.primary.libs versionCode:311318020
+package:com.google.android.wifi.resources.pixel versionCode:1
+package:com.google.android.wifi.resources versionCode:1
+package:com.google.android.wifi versionCode:311313000
+package:com.google.android.permissioncontroller versionCode:311311000
+package:com.google.android.permission versionCode:311311000
+package:com.google.android.art versionCode:311310000
+
+detailed train modules with their versionCode in pure mode:
+
+com.google.android.ext.services:311313000
+com.google.android.permissioncontroller:311311000
+com.google.android.captiveportallogin:310911010
+com.google.android.modulemetadata:311318024
+com.google.android.networkstack.tethering:31
+com.google.android.networkstack.tethering.overlay:31
+com.google.android.networkstack:311313000
+com.google.android.networkstack.permissionconfig:300000000
+com.google.android.documentsui.theme.pixel:1
+com.google.android.documentsui:310851020
+com.google.mainline.telemetry:311300014
+com.google.android.networkstack.permissionconfig:300000000
+com.google.android.conscrypt:310911000
+com.google.android.adbd:311310002
+com.google.android.ipsec:311310000
+com.google.android.cellbroadcastservice:300000000
+com.google.android.cellbroadcastreceiver:300000000
+com.google.android.cellbroadcast:311311000
+com.google.android.extservices:311313000
+com.google.android.media:311311000
+com.google.android.mediaprovider:311313010
+com.google.android.media.swcodec:311311000
+com.google.android.mediaprovider:311313010
+com.google.android.os.statsd:311210000
+com.google.android.neuralnetworks:311310000
+com.google.android.resolv:311313000
+com.google.android.media.swcodec:311311000
+com.google.android.scheduling:310733000
+com.google.android.sdkext:310912000
+com.google.android.tzdata3:311311000
+com.google.android.tetheringentitlement:104
+com.google.android.tethering:311314000
+com.google.mainline.primary.libs:311318020
+com.google.android.wifi.resources.pixel:1
+com.google.android.wifi.resources:1
+com.google.android.wifi:311313000
+com.google.android.permissioncontroller:311311000
+com.google.android.permission:311311000
+com.google.android.art:311310000
+
+return a dict including the modules info:
+
+{'com.google.android.ext.services': '311313000', 'com.google.android.permissioncontroller': '311311000', 'com.google.android.captiveportallogin': '310911010', 'com.google.android.modulemetadata': '311318024', 'com.google.android.networkstack.tethering': '31', 'com.google.android.networkstack.tethering.overlay': '31', 'com.google.android.networkstack': '311313000', 'com.google.android.networkstack.permissionconfig': '300000000', 'com.google.android.documentsui.theme.pixel': '1', 'com.google.android.documentsui': '310851020', 'com.google.mainline.telemetry': '311300014', 'com.google.android.conscrypt': '310911000', 'com.google.android.adbd': '311310002', 'com.google.android.ipsec': '311310000', 'com.google.android.cellbroadcastservice': '300000000', 'com.google.android.cellbroadcastreceiver': '300000000', 'com.google.android.cellbroadcast': '311311000', 'com.google.android.extservices': '311313000', 'com.google.android.media': '311311000', 'com.google.android.mediaprovider': '311313010', 'com.google.android.media.swcodec': '311311000', 'com.google.android.os.statsd': '311210000', 'com.google.android.neuralnetworks': '311310000', 'com.google.android.resolv': '311313000', 'com.google.android.scheduling': '310733000', 'com.google.android.sdkext': '310912000', 'com.google.android.tzdata3': '311311000', 'com.google.android.tetheringentitlement': '104', 'com.google.android.tethering': '311314000', 'com.google.mainline.primary.libs': '311318020', 'com.google.android.wifi.resources.pixel': '1', 'com.google.android.wifi.resources': '1', 'com.google.android.wifi': '311313000', 'com.google.android.permission': '311311000', 'com.google.android.art': '311310000'}
+
+tail =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#  mainline_update_test.py SideloadModulesTestCase get_train_module_and_version  =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+mainline_update_test.py SideloadModulesTestCase test_05_train_get_module_and_version
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 
         </pre>
     </div>
@@ -770,129 +851,247 @@ version info of this build in dict:
     <td></td>
 </tr>
 
-<tr id='pt1.1.8' class='hiddenRow'>
-    <td class='passCase'>
-        <div class='testcase'>test_08_train_get_module_list</div>
-    </td>
-    <td style="color: #495057">
-        <div></div>
-    </td>
-    <td style="color: #495057">
-        <div>0.09 s</div>
-    </td>
-    <td colspan='5' align='center'>
-    <!--css div popup start-->
-    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.1.8')" >
-        pass</a>
-    <div id='div_pt1.1.8' class="popup_window">
-        <div style='text-align: right; color:red;cursor:pointer'>
-        <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.1.8').style.display = 'none' " >
-           [x]</a>
-        </div>
-        <pre>
-        pt1.1.8: ModuleInfo{b082bc2 Android Services} packageName: com.google.android.ext.services
-ModuleInfo{9dbedd3 Permission Controller} packageName: com.google.android.permissioncontroller
-ModuleInfo{94cbd10 Captive Portal Login} packageName: com.google.android.captiveportallogin
-ModuleInfo{1a79009 Module Metadata} packageName: com.google.android.modulemetadata
-ModuleInfo{231420e Network Stack} packageName: com.google.android.networkstack
-ModuleInfo{5ed942f Documents UI} packageName: com.google.android.documentsui
-ModuleInfo{4a89a3c Telemetry TVP} packageName: com.google.mainline.telemetry
-ModuleInfo{13023c5 Network Permission Configuration} packageName: com.google.android.networkstack.permissionconfig
-ModuleInfo{bc3711a ADBd} packageName: com.google.android.adbd
-ModuleInfo{2c9444b Conscrypt} packageName: com.google.android.conscrypt
-ModuleInfo{f831e28 Cell Broadcast} packageName: com.google.android.cellbroadcast
-ModuleInfo{8f43741 IPSec} packageName: com.google.android.ipsec
-ModuleInfo{61784e6 Android Services (APEX)} packageName: com.google.android.extservices
-ModuleInfo{265da27 Media} packageName: com.google.android.media
-ModuleInfo{efff4d4 Media Provider} packageName: com.google.android.mediaprovider
-ModuleInfo{f8c067d Neural Networks API} packageName: com.google.android.neuralnetworks
-ModuleInfo{a470972 Media Software Codec} packageName: com.google.android.media.swcodec
-ModuleInfo{54bf1c3 Statsd} packageName: com.google.android.os.statsd
-ModuleInfo{4d18a40 DNS Resolver} packageName: com.google.android.resolv
-ModuleInfo{2d78d79 Device Scheduling} packageName: com.google.android.scheduling
-ModuleInfo{7784abe SDK Extensions} packageName: com.google.android.sdkext
-ModuleInfo{1f1e71f Permission} packageName: com.google.android.permission
-ModuleInfo{9650a6c Time zone data} packageName: com.google.android.tzdata3
-ModuleInfo{4ba8835 Tethering} packageName: com.google.android.tethering
-ModuleInfo{6ea54ca Dynamic Common Libraries} packageName: com.google.mainline.primary.libs
-ModuleInfo{5d7d63b WiFi} packageName: com.google.android.wifi
-ModuleInfo{cce6158 Android Runtime} packageName: com.google.android.art
-
-list updated modules in package names:
-
-['com.google.android.ext.services', 'com.google.android.permissioncontroller', 'com.google.android.captiveportallogin', 'com.google.android.modulemetadata', 'com.google.android.networkstack', 'com.google.android.documentsui', 'com.google.mainline.telemetry', 'com.google.android.networkstack.permissionconfig', 'com.google.android.adbd', 'com.google.android.conscrypt', 'com.google.android.cellbroadcast', 'com.google.android.ipsec', 'com.google.android.extservices', 'com.google.android.media', 'com.google.android.mediaprovider', 'com.google.android.neuralnetworks', 'com.google.android.media.swcodec', 'com.google.android.os.statsd', 'com.google.android.resolv', 'com.google.android.scheduling', 'com.google.android.sdkext', 'com.google.android.permission', 'com.google.android.tzdata3', 'com.google.android.tethering', 'com.google.mainline.primary.libs', 'com.google.android.wifi', 'com.google.android.art']
-
-        </pre>
-    </div>
-    <!--css div popup end-->
-    </td>
-    <td></td>
-</tr>
-
-<tr id='pt1.1.9' class='hiddenRow'>
-    <td class='passCase'>
-        <div class='testcase'>test_09_play_force_stop</div>
-    </td>
-    <td style="color: #495057">
-        <div></div>
-    </td>
-    <td style="color: #495057">
-        <div>0.11 s</div>
-    </td>
-    <td colspan='5' align='center'>pass</td>
-    <td></td>
-</tr>
-
-<tr id='pt1.1.10' class='hiddenRow'>
-    <td class='passCase'>
-        <div class='testcase'>test_10_train_trigger_update</div>
-    </td>
-    <td style="color: #495057">
-        <div></div>
-    </td>
-    <td style="color: #495057">
-        <div>150.17 s</div>
-    </td>
-    <td colspan='5' align='center'>pass</td>
-    <td></td>
-</tr>
-
-<tr id='ft1.1.11' class='none'>
+<tr id='ft1.1.4' class='none'>
     <td class='failCase'>
-        <div class='testcase'>test_11_train_verify_version</div>
+        <div class='testcase'>test_07_train_rollback_modules</div>
     </td>
     <td style="color: #495057">
         <div></div>
     </td>
     <td style="color: #495057">
-        <div>0.1 s</div>
+        <div>0.36 s</div>
     </td>
     <td colspan='5' align='center'>
     <!--css div popup start-->
-    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft1.1.11')" >
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft1.1.4')" >
         fail</a>
-    <div id='div_ft1.1.11' class="popup_window">
+    <div id='div_ft1.1.4' class="popup_window">
         <div style='text-align: right; color:red;cursor:pointer'>
-        <a onfocus='this.blur();' onclick="document.getElementById('div_ft1.1.11').style.display = 'none' " >
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft1.1.4').style.display = 'none' " >
            [x]</a>
         </div>
         <pre>
-        ft1.1.11: raw version info:
+        ft1.1.4: 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+mainline_update_test.py SideloadModulesTestCase test_07_train_rollback_modules
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-    versionCode=310005800 minSdk=29 targetSdk=31
-    versionName=2021-09-01
 
-version info of this build in dict:
+head =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*  mainline_update_test.py SideloadModulesTestCase get_train_module_and_version  =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
-{'versionCode': '310005800', 'minSdk': '29', 'targetSdk': '31', 'versionName': '2021-09-01'}
 
-old version info:
+head =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*  mainline_update_test.py SideloadModulesTestCase get_module_list  =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
-{'versionCode': '310000000', 'minSdk': '29', 'targetSdk': '31', 'versionName': '2021-09-01'}
+
+list current modules in package names:
+
+['com.google.android.ext.services', 'com.google.android.permissioncontroller', 'com.google.android.captiveportallogin', 'com.google.android.modulemetadata', 'com.google.android.networkstack', 'com.google.android.documentsui', 'com.google.mainline.telemetry', 'com.google.android.networkstack.permissionconfig', 'com.google.android.conscrypt', 'com.google.android.adbd', 'com.google.android.ipsec', 'com.google.android.cellbroadcast', 'com.google.android.extservices', 'com.google.android.media', 'com.google.android.mediaprovider', 'com.google.android.os.statsd', 'com.google.android.neuralnetworks', 'com.google.android.resolv', 'com.google.android.media.swcodec', 'com.google.android.scheduling', 'com.google.android.sdkext', 'com.google.android.tzdata3', 'com.google.android.tethering', 'com.google.mainline.primary.libs', 'com.google.android.wifi', 'com.google.android.permission', 'com.google.android.art'] 
+
+
+raw current moudules info:
+
+ModuleInfo{3763f22 Android Services} packageName: com.google.android.ext.services
+ModuleInfo{6e16db3 Permission Controller} packageName: com.google.android.permissioncontroller
+ModuleInfo{8da6f70 Captive Portal Login} packageName: com.google.android.captiveportallogin
+ModuleInfo{395c2e9 Module Metadata} packageName: com.google.android.modulemetadata
+ModuleInfo{15d2b6e Network Stack} packageName: com.google.android.networkstack
+ModuleInfo{cfb320f Documents UI} packageName: com.google.android.documentsui
+ModuleInfo{6cf129c Telemetry TVP} packageName: com.google.mainline.telemetry
+ModuleInfo{e7ea4a5 Network Permission Configuration} packageName: com.google.android.networkstack.permissionconfig
+ModuleInfo{eb4907a Conscrypt} packageName: com.google.android.conscrypt
+ModuleInfo{f42e02b ADBd} packageName: com.google.android.adbd
+ModuleInfo{c08bc88 IPSec} packageName: com.google.android.ipsec
+ModuleInfo{259e621 Cell Broadcast} packageName: com.google.android.cellbroadcast
+ModuleInfo{2eb3a46 Android Services (APEX)} packageName: com.google.android.extservices
+ModuleInfo{20d5407 Media} packageName: com.google.android.media
+ModuleInfo{3b11934 Media Provider} packageName: com.google.android.mediaprovider
+ModuleInfo{a4dc35d Statsd} packageName: com.google.android.os.statsd
+ModuleInfo{b90b4d2 Neural Networks API} packageName: com.google.android.neuralnetworks
+ModuleInfo{2129a3 DNS Resolver} packageName: com.google.android.resolv
+ModuleInfo{fe094a0 Media Software Codec} packageName: com.google.android.media.swcodec
+ModuleInfo{3a83859 Device Scheduling} packageName: com.google.android.scheduling
+ModuleInfo{da14c1e SDK Extensions} packageName: com.google.android.sdkext
+ModuleInfo{12bcff Time zone data} packageName: com.google.android.tzdata3
+ModuleInfo{9ca5acc Tethering} packageName: com.google.android.tethering
+ModuleInfo{89b0115 Dynamic Common Libraries} packageName: com.google.mainline.primary.libs
+ModuleInfo{f920c2a WiFi} packageName: com.google.android.wifi
+ModuleInfo{3602a1b Permission} packageName: com.google.android.permission
+ModuleInfo{8a857b8 Android Runtime} packageName: com.google.android.art
+ 
+
+
+tail =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#  mainline_update_test.py SideloadModulesTestCase get_module_list  =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+
+
+detailed train modules with their versionCode:
+
+package:com.google.android.ext.services versionCode:311313000
+package:com.google.android.permissioncontroller versionCode:311311000
+package:com.google.android.captiveportallogin versionCode:310911010
+package:com.google.android.modulemetadata versionCode:311318024
+package:com.google.android.networkstack.tethering versionCode:31
+package:com.google.android.networkstack.tethering.overlay versionCode:31
+package:com.google.android.networkstack versionCode:311313000
+package:com.google.android.networkstack.permissionconfig versionCode:300000000
+package:com.google.android.documentsui.theme.pixel versionCode:1
+package:com.google.android.documentsui versionCode:310851020
+package:com.google.mainline.telemetry versionCode:311300014
+package:com.google.android.networkstack.permissionconfig versionCode:300000000
+package:com.google.android.conscrypt versionCode:310911000
+package:com.google.android.adbd versionCode:311310002
+package:com.google.android.ipsec versionCode:311310000
+package:com.google.android.cellbroadcastservice versionCode:300000000
+package:com.google.android.cellbroadcastreceiver versionCode:300000000
+package:com.google.android.cellbroadcast versionCode:311311000
+package:com.google.android.extservices versionCode:311313000
+package:com.google.android.media versionCode:311311000
+package:com.google.android.mediaprovider versionCode:311313010
+package:com.google.android.media.swcodec versionCode:311311000
+package:com.google.android.mediaprovider versionCode:311313010
+package:com.google.android.os.statsd versionCode:311210000
+package:com.google.android.neuralnetworks versionCode:311310000
+package:com.google.android.resolv versionCode:311313000
+package:com.google.android.media.swcodec versionCode:311311000
+package:com.google.android.scheduling versionCode:310733000
+package:com.google.android.sdkext versionCode:310912000
+package:com.google.android.tzdata3 versionCode:311311000
+package:com.google.android.tetheringentitlement versionCode:104
+package:com.google.android.tethering versionCode:311314000
+package:com.google.mainline.primary.libs versionCode:311318020
+package:com.google.android.wifi.resources.pixel versionCode:1
+package:com.google.android.wifi.resources versionCode:1
+package:com.google.android.wifi versionCode:311313000
+package:com.google.android.permissioncontroller versionCode:311311000
+package:com.google.android.permission versionCode:311311000
+package:com.google.android.art versionCode:311310000
+
+detailed train modules with their versionCode in pure mode:
+
+com.google.android.ext.services:311313000
+com.google.android.permissioncontroller:311311000
+com.google.android.captiveportallogin:310911010
+com.google.android.modulemetadata:311318024
+com.google.android.networkstack.tethering:31
+com.google.android.networkstack.tethering.overlay:31
+com.google.android.networkstack:311313000
+com.google.android.networkstack.permissionconfig:300000000
+com.google.android.documentsui.theme.pixel:1
+com.google.android.documentsui:310851020
+com.google.mainline.telemetry:311300014
+com.google.android.networkstack.permissionconfig:300000000
+com.google.android.conscrypt:310911000
+com.google.android.adbd:311310002
+com.google.android.ipsec:311310000
+com.google.android.cellbroadcastservice:300000000
+com.google.android.cellbroadcastreceiver:300000000
+com.google.android.cellbroadcast:311311000
+com.google.android.extservices:311313000
+com.google.android.media:311311000
+com.google.android.mediaprovider:311313010
+com.google.android.media.swcodec:311311000
+com.google.android.mediaprovider:311313010
+com.google.android.os.statsd:311210000
+com.google.android.neuralnetworks:311310000
+com.google.android.resolv:311313000
+com.google.android.media.swcodec:311311000
+com.google.android.scheduling:310733000
+com.google.android.sdkext:310912000
+com.google.android.tzdata3:311311000
+com.google.android.tetheringentitlement:104
+com.google.android.tethering:311314000
+com.google.mainline.primary.libs:311318020
+com.google.android.wifi.resources.pixel:1
+com.google.android.wifi.resources:1
+com.google.android.wifi:311313000
+com.google.android.permissioncontroller:311311000
+com.google.android.permission:311311000
+com.google.android.art:311310000
+
+return a dict including the modules info:
+
+{'com.google.android.ext.services': '311313000', 'com.google.android.permissioncontroller': '311311000', 'com.google.android.captiveportallogin': '310911010', 'com.google.android.modulemetadata': '311318024', 'com.google.android.networkstack.tethering': '31', 'com.google.android.networkstack.tethering.overlay': '31', 'com.google.android.networkstack': '311313000', 'com.google.android.networkstack.permissionconfig': '300000000', 'com.google.android.documentsui.theme.pixel': '1', 'com.google.android.documentsui': '310851020', 'com.google.mainline.telemetry': '311300014', 'com.google.android.conscrypt': '310911000', 'com.google.android.adbd': '311310002', 'com.google.android.ipsec': '311310000', 'com.google.android.cellbroadcastservice': '300000000', 'com.google.android.cellbroadcastreceiver': '300000000', 'com.google.android.cellbroadcast': '311311000', 'com.google.android.extservices': '311313000', 'com.google.android.media': '311311000', 'com.google.android.mediaprovider': '311313010', 'com.google.android.media.swcodec': '311311000', 'com.google.android.os.statsd': '311210000', 'com.google.android.neuralnetworks': '311310000', 'com.google.android.resolv': '311313000', 'com.google.android.scheduling': '310733000', 'com.google.android.sdkext': '310912000', 'com.google.android.tzdata3': '311311000', 'com.google.android.tetheringentitlement': '104', 'com.google.android.tethering': '311314000', 'com.google.mainline.primary.libs': '311318020', 'com.google.android.wifi.resources.pixel': '1', 'com.google.android.wifi.resources': '1', 'com.google.android.wifi': '311313000', 'com.google.android.permission': '311311000', 'com.google.android.art': '311310000'}
+
+tail =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#  mainline_update_test.py SideloadModulesTestCase get_train_module_and_version  =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+
+
+detailed modules with their versionCode after rollback.
+
+{'com.google.android.ext.services': '311313000', 'com.google.android.permissioncontroller': '311311000', 'com.google.android.captiveportallogin': '310911010', 'com.google.android.modulemetadata': '311318024', 'com.google.android.networkstack.tethering': '31', 'com.google.android.networkstack.tethering.overlay': '31', 'com.google.android.networkstack': '311313000', 'com.google.android.networkstack.permissionconfig': '300000000', 'com.google.android.documentsui.theme.pixel': '1', 'com.google.android.documentsui': '310851020', 'com.google.mainline.telemetry': '311300014', 'com.google.android.conscrypt': '310911000', 'com.google.android.adbd': '311310002', 'com.google.android.ipsec': '311310000', 'com.google.android.cellbroadcastservice': '300000000', 'com.google.android.cellbroadcastreceiver': '300000000', 'com.google.android.cellbroadcast': '311311000', 'com.google.android.extservices': '311313000', 'com.google.android.media': '311311000', 'com.google.android.mediaprovider': '311313010', 'com.google.android.media.swcodec': '311311000', 'com.google.android.os.statsd': '311210000', 'com.google.android.neuralnetworks': '311310000', 'com.google.android.resolv': '311313000', 'com.google.android.scheduling': '310733000', 'com.google.android.sdkext': '310912000', 'com.google.android.tzdata3': '311311000', 'com.google.android.tetheringentitlement': '104', 'com.google.android.tethering': '311314000', 'com.google.mainline.primary.libs': '311318020', 'com.google.android.wifi.resources.pixel': '1', 'com.google.android.wifi.resources': '1', 'com.google.android.wifi': '311313000', 'com.google.android.permission': '311311000', 'com.google.android.art': '311310000'} 
+
+
+detailed old modules with versionCode:
+
+{'com.google.android.ext.services': '310727000', 'com.google.android.permissioncontroller': '310733000', 'com.google.android.captiveportallogin': '310727000', 'com.google.android.modulemetadata': '310005800'} 
+
+
+difference between two sets:
+
+{('com.google.android.tethering', '311314000'), ('com.google.android.mediaprovider', '311313010'), ('com.google.android.modulemetadata', '311318024'), ('com.google.android.cellbroadcastreceiver', '300000000'), ('com.google.android.ext.services', '311313000'), ('com.google.android.ipsec', '311310000'), ('com.google.android.wifi.resources', '1'), ('com.google.android.wifi', '311313000'), ('com.google.android.tetheringentitlement', '104'), ('com.google.android.networkstack.tethering.overlay', '31'), ('com.google.android.networkstack.permissionconfig', '300000000'), ('com.google.android.networkstack', '311313000'), ('com.google.mainline.primary.libs', '311318020'), ('com.google.android.neuralnetworks', '311310000'), ('com.google.android.captiveportallogin', '310727000'), ('com.google.android.extservices', '311313000'), ('com.google.android.cellbroadcastservice', '300000000'), ('com.google.android.sdkext', '310912000'), ('com.google.android.permissioncontroller', '311311000'), ('com.google.android.networkstack.tethering', '31'), ('com.google.mainline.telemetry', '311300014'), ('com.google.android.permissioncontroller', '310733000'), ('com.google.android.documentsui', '310851020'), ('com.google.android.documentsui.theme.pixel', '1'), ('com.google.android.scheduling', '310733000'), ('com.google.android.wifi.resources.pixel', '1'), ('com.google.android.art', '311310000'), ('com.google.android.os.statsd', '311210000'), ('com.google.android.conscrypt', '310911000'), ('com.google.android.permission', '311311000'), ('com.google.android.adbd', '311310002'), ('com.google.android.resolv', '311313000'), ('com.google.android.captiveportallogin', '310911010'), ('com.google.android.media.swcodec', '311311000'), ('com.google.android.modulemetadata', '310005800'), ('com.google.android.tzdata3', '311311000'), ('com.google.android.ext.services', '310727000'), ('com.google.android.media', '311311000'), ('com.google.android.cellbroadcast', '311311000')} 
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+mainline_update_test.py SideloadModulesTestCase test_07_train_rollback_modules
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 Traceback (most recent call last):
-  File "mainline_update_test.py", line 113, in test_11_train_verify_version
-    self.assertTrue(new_date &gt; old_date)
-AssertionError: False is not true
+  File "mainline_update_test.py", line 296, in test_07_train_rollback_modules
+    self.assertDictEqual(old_module_and_version, rollbacked_module_and_version, "rollback failed, some module not rollbacked.")
+AssertionError: {'com[29 chars]: '310727000', 'com.google.android.permissionc[123 chars]800'} != {'com[29 chars]: '311313000', 'com.google.android.permissionc[1591 chars]000'}
++ {'com.google.android.adbd': '311310002',
++  'com.google.android.art': '311310000',
+- {'com.google.android.captiveportallogin': '310727000',
+? ^                                             ^^^ ^
+
++  'com.google.android.captiveportallogin': '310911010',
+? ^                                             ^^^ ^
+
++  'com.google.android.cellbroadcast': '311311000',
++  'com.google.android.cellbroadcastreceiver': '300000000',
++  'com.google.android.cellbroadcastservice': '300000000',
++  'com.google.android.conscrypt': '310911000',
++  'com.google.android.documentsui': '310851020',
++  'com.google.android.documentsui.theme.pixel': '1',
+-  'com.google.android.ext.services': '310727000',
+?                                        ^^^^
+
++  'com.google.android.ext.services': '311313000',
+?                                        ^^^^
+
++  'com.google.android.extservices': '311313000',
++  'com.google.android.ipsec': '311310000',
++  'com.google.android.media': '311311000',
++  'com.google.android.media.swcodec': '311311000',
++  'com.google.android.mediaprovider': '311313010',
+-  'com.google.android.modulemetadata': '310005800',
+?                                          ^^^^  ^
+
++  'com.google.android.modulemetadata': '311318024',
+?                                          ^^^  ^^
+
++  'com.google.android.networkstack': '311313000',
++  'com.google.android.networkstack.permissionconfig': '300000000',
++  'com.google.android.networkstack.tethering': '31',
++  'com.google.android.networkstack.tethering.overlay': '31',
++  'com.google.android.neuralnetworks': '311310000',
++  'com.google.android.os.statsd': '311210000',
++  'com.google.android.permission': '311311000',
+-  'com.google.android.permissioncontroller': '310733000'}
+?                                                ^^ ^    ^
+
++  'com.google.android.permissioncontroller': '311311000',
+?                                                ^ ^^    ^
+
++  'com.google.android.resolv': '311313000',
++  'com.google.android.scheduling': '310733000',
++  'com.google.android.sdkext': '310912000',
++  'com.google.android.tethering': '311314000',
++  'com.google.android.tetheringentitlement': '104',
++  'com.google.android.tzdata3': '311311000',
++  'com.google.android.wifi': '311313000',
++  'com.google.android.wifi.resources': '1',
++  'com.google.android.wifi.resources.pixel': '1',
++  'com.google.mainline.primary.libs': '311318020',
++  'com.google.mainline.telemetry': '311300014'} : rollback failed, some module not rollbacked.
 
         </pre>
     </div>
@@ -901,304 +1100,181 @@ AssertionError: False is not true
     <td></td>
 </tr>
 
-<tr id='pt1.1.12' class='hiddenRow'>
+<tr id='pt1.1.5' class='hiddenRow'>
     <td class='passCase'>
-        <div class='testcase'>test_12_train_verify_module_list</div>
+        <div class='testcase'>test_08_train_rollback_particular_module</div>
     </td>
     <td style="color: #495057">
         <div></div>
     </td>
     <td style="color: #495057">
-        <div>0.09 s</div>
+        <div>128.42 s</div>
     </td>
     <td colspan='5' align='center'>
     <!--css div popup start-->
-    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.1.12')" >
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.1.5')" >
         pass</a>
-    <div id='div_pt1.1.12' class="popup_window">
+    <div id='div_pt1.1.5' class="popup_window">
         <div style='text-align: right; color:red;cursor:pointer'>
-        <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.1.12').style.display = 'none' " >
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.1.5').style.display = 'none' " >
            [x]</a>
         </div>
         <pre>
-        pt1.1.12: ModuleInfo{b082bc2 Android Services} packageName: com.google.android.ext.services
-ModuleInfo{9dbedd3 Permission Controller} packageName: com.google.android.permissioncontroller
-ModuleInfo{94cbd10 Captive Portal Login} packageName: com.google.android.captiveportallogin
-ModuleInfo{1a79009 Module Metadata} packageName: com.google.android.modulemetadata
-ModuleInfo{231420e Network Stack} packageName: com.google.android.networkstack
-ModuleInfo{5ed942f Documents UI} packageName: com.google.android.documentsui
-ModuleInfo{4a89a3c Telemetry TVP} packageName: com.google.mainline.telemetry
-ModuleInfo{13023c5 Network Permission Configuration} packageName: com.google.android.networkstack.permissionconfig
-ModuleInfo{bc3711a ADBd} packageName: com.google.android.adbd
-ModuleInfo{2c9444b Conscrypt} packageName: com.google.android.conscrypt
-ModuleInfo{f831e28 Cell Broadcast} packageName: com.google.android.cellbroadcast
-ModuleInfo{8f43741 IPSec} packageName: com.google.android.ipsec
-ModuleInfo{61784e6 Android Services (APEX)} packageName: com.google.android.extservices
-ModuleInfo{265da27 Media} packageName: com.google.android.media
-ModuleInfo{efff4d4 Media Provider} packageName: com.google.android.mediaprovider
-ModuleInfo{f8c067d Neural Networks API} packageName: com.google.android.neuralnetworks
-ModuleInfo{a470972 Media Software Codec} packageName: com.google.android.media.swcodec
-ModuleInfo{54bf1c3 Statsd} packageName: com.google.android.os.statsd
-ModuleInfo{4d18a40 DNS Resolver} packageName: com.google.android.resolv
-ModuleInfo{2d78d79 Device Scheduling} packageName: com.google.android.scheduling
-ModuleInfo{7784abe SDK Extensions} packageName: com.google.android.sdkext
-ModuleInfo{1f1e71f Permission} packageName: com.google.android.permission
-ModuleInfo{9650a6c Time zone data} packageName: com.google.android.tzdata3
-ModuleInfo{4ba8835 Tethering} packageName: com.google.android.tethering
-ModuleInfo{6ea54ca Dynamic Common Libraries} packageName: com.google.mainline.primary.libs
-ModuleInfo{5d7d63b WiFi} packageName: com.google.android.wifi
-ModuleInfo{cce6158 Android Runtime} packageName: com.google.android.art
+        pt1.1.5: 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+mainline_update_test.py SideloadModulesTestCase test_08_train_rollback_particular_module
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-list updated modules in package names:
 
-['com.google.android.ext.services', 'com.google.android.permissioncontroller', 'com.google.android.captiveportallogin', 'com.google.android.modulemetadata', 'com.google.android.networkstack', 'com.google.android.documentsui', 'com.google.mainline.telemetry', 'com.google.android.networkstack.permissionconfig', 'com.google.android.adbd', 'com.google.android.conscrypt', 'com.google.android.cellbroadcast', 'com.google.android.ipsec', 'com.google.android.extservices', 'com.google.android.media', 'com.google.android.mediaprovider', 'com.google.android.neuralnetworks', 'com.google.android.media.swcodec', 'com.google.android.os.statsd', 'com.google.android.resolv', 'com.google.android.scheduling', 'com.google.android.sdkext', 'com.google.android.permission', 'com.google.android.tzdata3', 'com.google.android.tethering', 'com.google.mainline.primary.libs', 'com.google.android.wifi', 'com.google.android.art']
+head =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*  mainline_update_test.py SideloadModulesTestCase check_particular_module_rollback  =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
-mainline train update succeeds.
+Will kill poor com.google.android.documentsui 10 times......
 
-new added modules:
- {'com.google.android.tzdata3', 'com.google.android.art', 'com.google.android.os.statsd', 'com.google.android.wifi', 'com.google.android.conscrypt', 'com.google.android.mediaprovider', 'com.google.android.cellbroadcast', 'com.google.android.sdkext', 'com.google.android.scheduling', 'com.google.mainline.primary.libs', 'com.google.android.captiveportallogin', 'com.google.android.networkstack.permissionconfig', 'com.google.android.media.swcodec', 'com.google.android.adbd', 'com.google.android.permission', 'com.google.mainline.telemetry', 'com.google.android.ext.services', 'com.google.android.ipsec', 'com.google.android.extservices', 'com.google.android.neuralnetworks', 'com.google.android.permissioncontroller', 'com.google.android.tethering', 'com.google.android.modulemetadata', 'com.google.android.documentsui', 'com.google.android.resolv', 'com.google.android.networkstack', 'com.google.android.media'}
 
-        </pre>
-    </div>
-    <!--css div popup end-->
-    </td>
-    <td></td>
-</tr>
+head =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*  mainline_update_test.py SideloadModulesTestCase get_train_module_and_version  =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
-<tr id='st1.1.13' class='none'>
-    <td class='passCase'>
-        <div class='testcase'>test_init_uiautomator</div>
-    </td>
-    <td style="color: #495057">
-        <div></div>
-    </td>
-    <td style="color: #495057">
-        <div>0.00 s</div>
-    </td>
-    <td colspan='5' align='center'>
-    <!--css div popup start-->
-    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_st1.1.13')" >
-        skip</a>
-    <div id='div_st1.1.13' class="popup_window">
-        <div style='text-align: right; color:red;cursor:pointer'>
-        <a onfocus='this.blur();' onclick="document.getElementById('div_st1.1.13').style.display = 'none' " >
-           [x]</a>
-        </div>
-        <pre>
-        st1.1.13: skip case
-        </pre>
-    </div>
-    <!--css div popup end-->
-    </td>
-    <td></td>
-</tr>
 
-<tr class='passClass'>
-    <td>SideloadModulesTestCase</td>
-    <td>
-    Verify update on OEM devices via sideloading moduels. 
-    </td>
-    <td></td>
-    <td>5</td>
-    <td>5</td>
-    <td>0</td>
-    <td>0</td>
-    <td><a href="javascript:showClassDetail('c1.2',5)">Detail</a></td>
-    <td>&nbsp;</td>
-</tr>
+head =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*  mainline_update_test.py SideloadModulesTestCase get_module_list  =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
-<tr id='pt1.2.1' class='hiddenRow'>
-    <td class='passCase'>
-        <div class='testcase'>test_01_enable_testharness</div>
-    </td>
-    <td style="color: #495057">
-        <div></div>
-    </td>
-    <td style="color: #495057">
-        <div>150.1 s</div>
-    </td>
-    <td colspan='5' align='center'>pass</td>
-    <td></td>
-</tr>
 
-<tr id='pt1.2.2' class='hiddenRow'>
-    <td class='passCase'>
-        <div class='testcase'>test_02_calm_the_screen</div>
-    </td>
-    <td style="color: #495057">
-        <div></div>
-    </td>
-    <td style="color: #495057">
-        <div>3.85 s</div>
-    </td>
-    <td colspan='5' align='center'>
-    <!--css div popup start-->
-    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.2.2')" >
-        pass</a>
-    <div id='div_pt1.2.2' class="popup_window">
-        <div style='text-align: right; color:red;cursor:pointer'>
-        <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.2.2').style.display = 'none' " >
-           [x]</a>
-        </div>
-        <pre>
-        pt1.2.2: [I 211215 11:42:34 init:156] uiautomator2 version: 2.16.8
-[I 211215 11:42:34 init:346] Install minicap, minitouch
-[D 211215 11:42:34 init:59] Use cached assets: /Users/xiawang/.uiautomator2/cache/minitouch-f7a806902f/minitouch
-[D 211215 11:42:34 init:238] Push to /data/local/tmp/minitouch:0755
-[I 211215 11:42:34 init:352] Android R (sdk:30) has no minicap resource
-[D 211215 11:42:34 init:256] apk-debug package-info: None
-[D 211215 11:42:34 init:257] apk-debug-test package-info: None
-[I 211215 11:42:34 init:359] Install com.github.uiautomator, com.github.uiautomator.test 2.3.3
-[D 211215 11:42:34 init:167] Shell: ('pm', 'uninstall', 'com.github.uiautomator')
-[D 211215 11:42:34 init:167] Shell: ('pm', 'uninstall', 'com.github.uiautomator.test')
-[D 211215 11:42:34 init:59] Use cached assets: /Users/xiawang/.uiautomator2/cache/app-uiautomator.apk-d3f17174fb/app-uiautomator.apk
-[D 211215 11:42:34 init:238] Push to /data/local/tmp/app-uiautomator.apk:0644
-[D 211215 11:42:34 init:167] Shell: ('pm', 'install', '-r', '-t', '/data/local/tmp/app-uiautomator.apk')
-[I 211215 11:42:35 init:331] - app-uiautomator.apk installed
-[D 211215 11:42:35 init:59] Use cached assets: /Users/xiawang/.uiautomator2/cache/app-uiautomator-test.apk-652bf9e13c/app-uiautomator-test.apk
-[D 211215 11:42:35 init:238] Push to /data/local/tmp/app-uiautomator-test.apk:0644
-[D 211215 11:42:35 init:167] Shell: ('pm', 'install', '-r', '-t', '/data/local/tmp/app-uiautomator-test.apk')
-[I 211215 11:42:35 init:331] - app-uiautomator-test.apk installed
-[D 211215 11:42:35 init:167] Shell: ('/data/local/tmp/atx-agent', 'server', '--stop')
-[I 211215 11:42:35 init:339] Install atx-agent 0.10.0
-[D 211215 11:42:35 init:59] Use cached assets: /Users/xiawang/.uiautomator2/cache/atx-agent_0.10.0_linux_armv7.tar.gz-cf3333ae7b/atx-agent_0.10.0_linux_armv7.tar.gz
-[D 211215 11:42:35 init:238] Push to /data/local/tmp/atx-agent:0755
-[D 211215 11:42:35 init:167] Shell: ('/data/local/tmp/atx-agent', 'server', '--nouia', '-d', '--addr', '127.0.0.1:7912')
-[I 211215 11:42:36 init:374] Check atx-agent version
-[D 211215 11:42:36 init:387] Forward: local:tcp:54895 -&gt; remote:tcp:7912
-WARNING:retry.api:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')), retrying in 0.5 seconds...
-[D 211215 11:42:36 init:387] Forward: local:tcp:54895 -&gt; remote:tcp:7912
-[D 211215 11:42:36 init:390] atx-agent version 0.10.0
-[D 211215 11:42:36 init:393] device wlan ip: wlan0 have no ip address
-Successfully init AdbDevice(serial=898X06LJT)
-[D 211215 11:42:36 init:387] Forward: local:tcp:54895 -&gt; remote:tcp:7912
-[D 211215 11:42:36 init:390] atx-agent version 0.10.0
-[D 211215 11:42:36 init:393] device wlan ip: wlan0 have no ip address
+list current modules in package names:
 
-        </pre>
-    </div>
-    <!--css div popup end-->
-    </td>
-    <td></td>
-</tr>
+['com.google.android.ext.services', 'com.google.android.permissioncontroller', 'com.google.android.captiveportallogin', 'com.google.android.modulemetadata', 'com.google.android.networkstack', 'com.google.android.documentsui', 'com.google.mainline.telemetry', 'com.google.android.networkstack.permissionconfig', 'com.google.android.conscrypt', 'com.google.android.adbd', 'com.google.android.ipsec', 'com.google.android.cellbroadcast', 'com.google.android.extservices', 'com.google.android.media', 'com.google.android.mediaprovider', 'com.google.android.os.statsd', 'com.google.android.neuralnetworks', 'com.google.android.resolv', 'com.google.android.media.swcodec', 'com.google.android.scheduling', 'com.google.android.sdkext', 'com.google.android.tzdata3', 'com.google.android.tethering', 'com.google.mainline.primary.libs', 'com.google.android.wifi', 'com.google.android.permission', 'com.google.android.art'] 
 
-<tr id='pt1.2.3' class='hiddenRow'>
-    <td class='passCase'>
-        <div class='testcase'>test_03_train_get_version</div>
-    </td>
-    <td style="color: #495057">
-        <div></div>
-    </td>
-    <td style="color: #495057">
-        <div>0.13 s</div>
-    </td>
-    <td colspan='5' align='center'>
-    <!--css div popup start-->
-    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.2.3')" >
-        pass</a>
-    <div id='div_pt1.2.3' class="popup_window">
-        <div style='text-align: right; color:red;cursor:pointer'>
-        <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.2.3').style.display = 'none' " >
-           [x]</a>
-        </div>
-        <pre>
-        pt1.2.3: raw version info:
 
-    versionCode=310005800 minSdk=29 targetSdk=31
-    versionName=2021-09-01
+raw current moudules info:
 
-version info of this build in dict:
+ModuleInfo{3763f22 Android Services} packageName: com.google.android.ext.services
+ModuleInfo{6e16db3 Permission Controller} packageName: com.google.android.permissioncontroller
+ModuleInfo{8da6f70 Captive Portal Login} packageName: com.google.android.captiveportallogin
+ModuleInfo{395c2e9 Module Metadata} packageName: com.google.android.modulemetadata
+ModuleInfo{15d2b6e Network Stack} packageName: com.google.android.networkstack
+ModuleInfo{cfb320f Documents UI} packageName: com.google.android.documentsui
+ModuleInfo{6cf129c Telemetry TVP} packageName: com.google.mainline.telemetry
+ModuleInfo{e7ea4a5 Network Permission Configuration} packageName: com.google.android.networkstack.permissionconfig
+ModuleInfo{eb4907a Conscrypt} packageName: com.google.android.conscrypt
+ModuleInfo{f42e02b ADBd} packageName: com.google.android.adbd
+ModuleInfo{c08bc88 IPSec} packageName: com.google.android.ipsec
+ModuleInfo{259e621 Cell Broadcast} packageName: com.google.android.cellbroadcast
+ModuleInfo{2eb3a46 Android Services (APEX)} packageName: com.google.android.extservices
+ModuleInfo{20d5407 Media} packageName: com.google.android.media
+ModuleInfo{3b11934 Media Provider} packageName: com.google.android.mediaprovider
+ModuleInfo{a4dc35d Statsd} packageName: com.google.android.os.statsd
+ModuleInfo{b90b4d2 Neural Networks API} packageName: com.google.android.neuralnetworks
+ModuleInfo{2129a3 DNS Resolver} packageName: com.google.android.resolv
+ModuleInfo{fe094a0 Media Software Codec} packageName: com.google.android.media.swcodec
+ModuleInfo{3a83859 Device Scheduling} packageName: com.google.android.scheduling
+ModuleInfo{da14c1e SDK Extensions} packageName: com.google.android.sdkext
+ModuleInfo{12bcff Time zone data} packageName: com.google.android.tzdata3
+ModuleInfo{9ca5acc Tethering} packageName: com.google.android.tethering
+ModuleInfo{89b0115 Dynamic Common Libraries} packageName: com.google.mainline.primary.libs
+ModuleInfo{f920c2a WiFi} packageName: com.google.android.wifi
+ModuleInfo{3602a1b Permission} packageName: com.google.android.permission
+ModuleInfo{8a857b8 Android Runtime} packageName: com.google.android.art
+ 
 
-{'versionCode': '310005800', 'minSdk': '29', 'targetSdk': '31', 'versionName': '2021-09-01'}
 
-        </pre>
-    </div>
-    <!--css div popup end-->
-    </td>
-    <td></td>
-</tr>
+tail =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#  mainline_update_test.py SideloadModulesTestCase get_module_list  =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 
-<tr id='pt1.2.4' class='hiddenRow'>
-    <td class='passCase'>
-        <div class='testcase'>test_04_train_get_module_list</div>
-    </td>
-    <td style="color: #495057">
-        <div></div>
-    </td>
-    <td style="color: #495057">
-        <div>0.08 s</div>
-    </td>
-    <td colspan='5' align='center'>
-    <!--css div popup start-->
-    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.2.4')" >
-        pass</a>
-    <div id='div_pt1.2.4' class="popup_window">
-        <div style='text-align: right; color:red;cursor:pointer'>
-        <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.2.4').style.display = 'none' " >
-           [x]</a>
-        </div>
-        <pre>
-        pt1.2.4: ModuleInfo{49d4809 Android Services} packageName: com.google.android.ext.services
-ModuleInfo{2e09a0e Permission Controller} packageName: com.google.android.permissioncontroller
-ModuleInfo{d660c2f Captive Portal Login} packageName: com.google.android.captiveportallogin
-ModuleInfo{783b23c Module Metadata} packageName: com.google.android.modulemetadata
-ModuleInfo{9c95bc5 Network Stack} packageName: com.google.android.networkstack
-ModuleInfo{410491a Documents UI} packageName: com.google.android.documentsui
-ModuleInfo{5513c4b Telemetry TVP} packageName: com.google.mainline.telemetry
-ModuleInfo{f7b628 Network Permission Configuration} packageName: com.google.android.networkstack.permissionconfig
-ModuleInfo{de8ef41 ADBd} packageName: com.google.android.adbd
-ModuleInfo{259dce6 Conscrypt} packageName: com.google.android.conscrypt
-ModuleInfo{1755227 Cell Broadcast} packageName: com.google.android.cellbroadcast
-ModuleInfo{f260cd4 IPSec} packageName: com.google.android.ipsec
-ModuleInfo{b143e7d Android Services (APEX)} packageName: com.google.android.extservices
-ModuleInfo{456e172 Media} packageName: com.google.android.media
-ModuleInfo{1dae9c3 Media Provider} packageName: com.google.android.mediaprovider
-ModuleInfo{d412240 Neural Networks API} packageName: com.google.android.neuralnetworks
-ModuleInfo{aab4579 Media Software Codec} packageName: com.google.android.media.swcodec
-ModuleInfo{eada2be Statsd} packageName: com.google.android.os.statsd
-ModuleInfo{4785f1f DNS Resolver} packageName: com.google.android.resolv
-ModuleInfo{536226c Device Scheduling} packageName: com.google.android.scheduling
-ModuleInfo{211c035 SDK Extensions} packageName: com.google.android.sdkext
-ModuleInfo{81d2cca Permission} packageName: com.google.android.permission
-ModuleInfo{64dce3b Time zone data} packageName: com.google.android.tzdata3
-ModuleInfo{98f958 Tethering} packageName: com.google.android.tethering
-ModuleInfo{f2b2ab1 Dynamic Common Libraries} packageName: com.google.mainline.primary.libs
-ModuleInfo{2494b96 WiFi} packageName: com.google.android.wifi
-ModuleInfo{a411317 Android Runtime} packageName: com.google.android.art
 
-list updated modules in package names:
+detailed train modules with their versionCode:
 
-['com.google.android.ext.services', 'com.google.android.permissioncontroller', 'com.google.android.captiveportallogin', 'com.google.android.modulemetadata', 'com.google.android.networkstack', 'com.google.android.documentsui', 'com.google.mainline.telemetry', 'com.google.android.networkstack.permissionconfig', 'com.google.android.adbd', 'com.google.android.conscrypt', 'com.google.android.cellbroadcast', 'com.google.android.ipsec', 'com.google.android.extservices', 'com.google.android.media', 'com.google.android.mediaprovider', 'com.google.android.neuralnetworks', 'com.google.android.media.swcodec', 'com.google.android.os.statsd', 'com.google.android.resolv', 'com.google.android.scheduling', 'com.google.android.sdkext', 'com.google.android.permission', 'com.google.android.tzdata3', 'com.google.android.tethering', 'com.google.mainline.primary.libs', 'com.google.android.wifi', 'com.google.android.art']
+package:com.google.android.ext.services versionCode:311313000
+package:com.google.android.permissioncontroller versionCode:311311000
+package:com.google.android.captiveportallogin versionCode:310911010
+package:com.google.android.modulemetadata versionCode:311318024
+package:com.google.android.networkstack.tethering versionCode:31
+package:com.google.android.networkstack.tethering.overlay versionCode:31
+package:com.google.android.networkstack versionCode:311313000
+package:com.google.android.networkstack.permissionconfig versionCode:300000000
+package:com.google.android.documentsui.theme.pixel versionCode:1
+package:com.google.android.documentsui versionCode:310851020
+package:com.google.mainline.telemetry versionCode:311300014
+package:com.google.android.networkstack.permissionconfig versionCode:300000000
+package:com.google.android.conscrypt versionCode:310911000
+package:com.google.android.adbd versionCode:311310002
+package:com.google.android.ipsec versionCode:311310000
+package:com.google.android.cellbroadcastservice versionCode:300000000
+package:com.google.android.cellbroadcastreceiver versionCode:300000000
+package:com.google.android.cellbroadcast versionCode:311311000
+package:com.google.android.extservices versionCode:311313000
+package:com.google.android.media versionCode:311311000
+package:com.google.android.mediaprovider versionCode:311313010
+package:com.google.android.media.swcodec versionCode:311311000
+package:com.google.android.mediaprovider versionCode:311313010
+package:com.google.android.os.statsd versionCode:311210000
+package:com.google.android.neuralnetworks versionCode:311310000
+package:com.google.android.resolv versionCode:311313000
+package:com.google.android.media.swcodec versionCode:311311000
+package:com.google.android.scheduling versionCode:310733000
+package:com.google.android.sdkext versionCode:310912000
+package:com.google.android.tzdata3 versionCode:311311000
+package:com.google.android.tetheringentitlement versionCode:104
+package:com.google.android.tethering versionCode:311314000
+package:com.google.mainline.primary.libs versionCode:311318020
+package:com.google.android.wifi.resources.pixel versionCode:1
+package:com.google.android.wifi.resources versionCode:1
+package:com.google.android.wifi versionCode:311313000
+package:com.google.android.permissioncontroller versionCode:311311000
+package:com.google.android.permission versionCode:311311000
+package:com.google.android.art versionCode:311310000
 
-        </pre>
-    </div>
-    <!--css div popup end-->
-    </td>
-    <td></td>
-</tr>
+detailed train modules with their versionCode in pure mode:
 
-<tr id='pt1.2.5' class='hiddenRow'>
-    <td class='passCase'>
-        <div class='testcase'>test_05_train_sideload_modules</div>
-    </td>
-    <td style="color: #495057">
-        <div></div>
-    </td>
-    <td style="color: #495057">
-        <div>21.07 s</div>
-    </td>
-    <td colspan='5' align='center'>
-    <!--css div popup start-->
-    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.2.5')" >
-        pass</a>
-    <div id='div_pt1.2.5' class="popup_window">
-        <div style='text-align: right; color:red;cursor:pointer'>
-        <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.2.5').style.display = 'none' " >
-           [x]</a>
-        </div>
-        <pre>
-        pt1.2.5: ['com.google.android.adbd_trimmed.apks', 'com.google.android.media.swcodec.apks', 'com.google.android.media.apks', 'com.google.android.permission.apks', 'com.google.android.tethering.apks', 'com.google.mainline.primary.libs.apks', 'DocumentsUIGoogle.apks', 'com.google.android.ipsec.apks', 'com.google.android.resolv.apks', 'CaptivePortalLoginGoogle.apks', 'com.google.android.cellbroadcast.apks', 'com.google.android.wifi.apks', 'com.google.android.tzdata3.apks', 'com.google.android.neuralnetworks.apks', 'com.google.android.scheduling.apks', 'com.google.mainline.telemetry_splus.apks', 'com.google.android.os.statsd.apks', 'com.google.android.extservices.apks', 'com.google.android.sdkext.apks', 'com.google.android.mediaprovider.apks', 'com.google.android.conscrypt.apks', 'com.google.android.modulemetadata_splus.apks', 'NetworkStackGoogle.apks', 'com.google.android.art.apks']
-S_modules/com.google.android.adbd_trimmed.apks,S_modules/com.google.android.media.swcodec.apks,S_modules/com.google.android.media.apks,S_modules/com.google.android.permission.apks,S_modules/com.google.android.tethering.apks,S_modules/com.google.mainline.primary.libs.apks,S_modules/DocumentsUIGoogle.apks,S_modules/com.google.android.ipsec.apks,S_modules/com.google.android.resolv.apks,S_modules/CaptivePortalLoginGoogle.apks,S_modules/com.google.android.cellbroadcast.apks,S_modules/com.google.android.wifi.apks,S_modules/com.google.android.tzdata3.apks,S_modules/com.google.android.neuralnetworks.apks,S_modules/com.google.android.scheduling.apks,S_modules/com.google.mainline.telemetry_splus.apks,S_modules/com.google.android.os.statsd.apks,S_modules/com.google.android.extservices.apks,S_modules/com.google.android.sdkext.apks,S_modules/com.google.android.mediaprovider.apks,S_modules/com.google.android.conscrypt.apks,S_modules/com.google.android.modulemetadata_splus.apks,S_modules/NetworkStackGoogle.apks,S_modules/com.google.android.art.apks
+com.google.android.ext.services:311313000
+com.google.android.permissioncontroller:311311000
+com.google.android.captiveportallogin:310911010
+com.google.android.modulemetadata:311318024
+com.google.android.networkstack.tethering:31
+com.google.android.networkstack.tethering.overlay:31
+com.google.android.networkstack:311313000
+com.google.android.networkstack.permissionconfig:300000000
+com.google.android.documentsui.theme.pixel:1
+com.google.android.documentsui:310851020
+com.google.mainline.telemetry:311300014
+com.google.android.networkstack.permissionconfig:300000000
+com.google.android.conscrypt:310911000
+com.google.android.adbd:311310002
+com.google.android.ipsec:311310000
+com.google.android.cellbroadcastservice:300000000
+com.google.android.cellbroadcastreceiver:300000000
+com.google.android.cellbroadcast:311311000
+com.google.android.extservices:311313000
+com.google.android.media:311311000
+com.google.android.mediaprovider:311313010
+com.google.android.media.swcodec:311311000
+com.google.android.mediaprovider:311313010
+com.google.android.os.statsd:311210000
+com.google.android.neuralnetworks:311310000
+com.google.android.resolv:311313000
+com.google.android.media.swcodec:311311000
+com.google.android.scheduling:310733000
+com.google.android.sdkext:310912000
+com.google.android.tzdata3:311311000
+com.google.android.tetheringentitlement:104
+com.google.android.tethering:311314000
+com.google.mainline.primary.libs:311318020
+com.google.android.wifi.resources.pixel:1
+com.google.android.wifi.resources:1
+com.google.android.wifi:311313000
+com.google.android.permissioncontroller:311311000
+com.google.android.permission:311311000
+com.google.android.art:311310000
+
+return a dict including the modules info:
+
+{'com.google.android.ext.services': '311313000', 'com.google.android.permissioncontroller': '311311000', 'com.google.android.captiveportallogin': '310911010', 'com.google.android.modulemetadata': '311318024', 'com.google.android.networkstack.tethering': '31', 'com.google.android.networkstack.tethering.overlay': '31', 'com.google.android.networkstack': '311313000', 'com.google.android.networkstack.permissionconfig': '300000000', 'com.google.android.documentsui.theme.pixel': '1', 'com.google.android.documentsui': '310851020', 'com.google.mainline.telemetry': '311300014', 'com.google.android.conscrypt': '310911000', 'com.google.android.adbd': '311310002', 'com.google.android.ipsec': '311310000', 'com.google.android.cellbroadcastservice': '300000000', 'com.google.android.cellbroadcastreceiver': '300000000', 'com.google.android.cellbroadcast': '311311000', 'com.google.android.extservices': '311313000', 'com.google.android.media': '311311000', 'com.google.android.mediaprovider': '311313010', 'com.google.android.media.swcodec': '311311000', 'com.google.android.os.statsd': '311210000', 'com.google.android.neuralnetworks': '311310000', 'com.google.android.resolv': '311313000', 'com.google.android.scheduling': '310733000', 'com.google.android.sdkext': '310912000', 'com.google.android.tzdata3': '311311000', 'com.google.android.tetheringentitlement': '104', 'com.google.android.tethering': '311314000', 'com.google.mainline.primary.libs': '311318020', 'com.google.android.wifi.resources.pixel': '1', 'com.google.android.wifi.resources': '1', 'com.google.android.wifi': '311313000', 'com.google.android.permission': '311311000', 'com.google.android.art': '311310000'}
+
+tail =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#  mainline_update_test.py SideloadModulesTestCase get_train_module_and_version  =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+
+
+tail =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#  mainline_update_test.py SideloadModulesTestCase check_particular_module_rollback  =#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+mainline_update_test.py SideloadModulesTestCase test_08_train_rollback_particular_module
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 
         </pre>
     </div>
@@ -1211,10 +1287,10 @@ S_modules/com.google.android.adbd_trimmed.apks,S_modules/com.google.android.medi
                     <td>Total</td>
                     <td> </td>
                     <td> </td>
-                    <td>17</td>
-                    <td class="text text-success">14</td>
+                    <td>5</td>
+                    <td class="text text-success">4</td>
                     <td class="text text-danger">1</td>
-                    <td class="text text-warning">2</td>
+                    <td class="text text-warning">0</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                 </tr>
@@ -1235,7 +1311,7 @@ S_modules/com.google.android.adbd_trimmed.apks,S_modules/com.google.android.medi
         ],
         datasets: [
             {
-                data: [14, 1, 2, 1],
+                data: [4, 1, 0, 0],
                 backgroundColor: [
                     "#10c469",
                     "#f9c851",
