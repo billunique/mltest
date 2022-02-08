@@ -1,5 +1,9 @@
 HTMLTestRunner/
 S_Modules/
+test/
+test_data/
+archive/
+sample/
 .DS_Store
 *.swp
 
