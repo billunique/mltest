@@ -1,2 +1,0 @@
-    versionCode=310000000 minSdk=10000 targetSdk=10000
-    versionName=2021-04

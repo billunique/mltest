@@ -1,4 +1,0 @@
-    versionCode=311221024 minSdk=31 targetSdk=31
-    versionName=2021-12-01 S+
-    versionCode=310005800 minSdk=29 targetSdk=31
-    versionName=2021-09-01
