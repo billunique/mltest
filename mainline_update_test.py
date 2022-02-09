@@ -4,7 +4,6 @@
 import subprocess
 import os
 import sys
-from time import sleep
 import time
 import datetime
 import json
@@ -20,16 +19,16 @@ from utils import *
 # -------------------------------------------------
 # DO NOT login one account across multiple devices, 
 # Google's secruity policy might make the account unavailable to download new Google Play or others. (?)
-TEST_ACCOUNT='wx.test2'
+TEST_ACCOUNT='wx.test1'
 PASSWORD='G00gl3test'
 WIFI_SSID='GoogleGuestPSK'
 WIFI_PASSWORD='pUp3EkaP'
 # specify bundletool path
-bundletool='bundletool-all-1.8.2.jar'
+BUNDLETOOL='bundletool-all-1.8.2.jar'
 # specify module apks path that for sideloading
-module_apks_path='S_modules/'
+MODULE_APKS_PATH='S_modules/'
 # specify mobly apk path
-mobly_apk_dir="./mobly-bundled-snippets-debug.apk"
+MOBLY_APK_DIR="./mobly-bundled-snippets-debug.apk"
 # -------------------------------------------------
 
 TEST_DATA_PATH = "./test_data/"
@@ -65,17 +64,16 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
         sysc.enable_testharness() 
         # # wait 2.5 minutes for the device to finish reset and reboot into desktop.
         # sleep(150)
-        mt.device_waitor(120)
+        mt.device_waitor(110)
 
 
     def test_02_calm_the_screen(self):
 
         sysc.screen_stay_on()
 
-
     def test_03_introduce_mobly(self):
 
-        sysc.install_apk(mobly_apk_dir)
+        sysc.install_apk(MOBLY_APK_DIR)
 
 
     def test_04_connect_to_wifi(self):
@@ -85,12 +83,13 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
 
     def test_05_play_signin(self):
 
+        sysc.activate_u2()
         mt.play_login(TEST_ACCOUNT, PASSWORD)
 
 
-    def test_06_play_check_version(self):
+    # def test_06_play_check_version(self):
 
-        mt.check_play_update_menu_shown()
+    #     mt.is_play_latest()
 
 
     def test_07_train_get_version(self):
@@ -114,32 +113,62 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
     def test_09_train_trigger_instant_hygiene(self):
 
         print_whereami(self)
+        try:
+            mt.is_play_latest()
+        except u2.UiObjectNotFoundError:
+            mt.play_login(TEST_ACCOUNT, PASSWORD)
         mt.trigger_instant_hygiene()
-        mt.check_play_update_menu_shown()
+        time.sleep(10)
+        mt.trigger_instant_self_update()
+        time.sleep(10)
+        mt.force_stop_play()
+        time.sleep(5)
+        mt.open_google_play()
+        time.sleep(5)
+        sysc.activate_u2()
+        time.sleep(100)
+        self.assertTrue(mt.check_play_update_menu_shown())
         print_whereami(self)
 
     def test_10_train_trigger_update(self):
 
-        mt.trigger_module_update()
-        # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SettingsSecurityEntryPoint", timeout=10.0):
-        # System update available
-        if d(textContains="Download").exists(timeout=10.0):
-            d.screenshot(TEST_DATA_PATH + "system_update_available.png")
-            d(text="Download & install").click()
-            # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
-            self.assertTrue(d(textContains="Restart").wait(timeout=120.0), "Download & install probably not started or failed.")
+        time.sleep(5)
+        attempts = 3
+        for i in range(attempts):
+            try:
+                mt.trigger_module_update()
+                # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SettingsSecurityEntryPoint", timeout=10.0):
+                # System update available
+                if d(textContains="Download").exists(timeout=10.0):
+                    d.screenshot(TEST_DATA_PATH + "system_update_available.png")
+                    d(text="Download & install").click()
+                    # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
+                    self.assertTrue(d(textContains="Restart").wait(timeout=120.0), "Download & install probably not started or failed in 2 minutes.")
+                    d(text="Restart now").click()
 
-        # Already silently installed updates
-        elif d(textContains="Restart").wait(timeout=10.0):
-            d.screenshot(TEST_DATA_PATH + "train_restart_to_update.png")
-            d(text="Restart now").click()
-        # Already up to date (installed and rebooted)
-        elif d(textContains="up to date").wait(timeout=10.0):
-            d.screenshot(TEST_DATA_PATH + "train_up_to_date.png")
-        else:
-            self.assertTrue(False, "update dialog not found, probably Play Store is too old.")
+                # Already silently installed updates
+                elif d(textContains="Restart").wait(timeout=10.0):
+                    d.screenshot(TEST_DATA_PATH + "train_restart_to_update.png")
+                    d(text="Restart now").click()
+                # Already up to date (installed and rebooted)
+                elif d(textContains="up to date").wait(timeout=10.0):
+                    d.screenshot(TEST_DATA_PATH + "train_up_to_date.png")
+                else:
+                    self.assertTrue(False, "Google Play system update window not found, probably Play Store is too old.")
 
-        mt.device_waitor(50)
+                mt.device_waitor(50)
+
+            except AssertionError:
+                if i < attempts -1: # i steps from 0
+                    d.press("back")
+                    mt.trigger_instant_self_update()
+                    time.sleep(20)
+                    continue
+                else:
+                    raise
+            break
+
+      
 
     def test_11_train_verify_version(self):
 
@@ -174,15 +203,26 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
             f.write("\n\n" + str(new_module_info) )
 
 
-        difference_set = set(new_module_info) - set(old_module_info)
-        # if the new set is greater than the old one, iow, the combined set has content
-        # self.assertTrue(difference_set, "mainline train update probably failed, module packages not updated.")
-        if difference_set:
-            print("\nmainline train update succeeds.\n")
-            print("new added modules:\n " + str(difference_set))
-        else:
-            # print("mainline train update failed.")
-            self.assertTrue(False, "mainline train update probably failed, module packages not updated.")
+        # difference_set = set(new_module_info) - set(old_module_info)
+        # # if the new set is greater than the old one, iow, the combined set has content
+        # # self.assertTrue(difference_set, "mainline train update probably failed, module packages not updated.")
+        # if difference_set:
+        #     print("\nmainline train update succeeds.\n")
+        #     print("new added modules:\n " + str(difference_set))
+        # else:
+        #     # print("mainline train update failed.")
+        #     self.assertTrue(False, "mainline train update probably failed, module packages not updated.")
+
+
+        listc = [item for item in old_module_info if item not in new_module_info]
+        # listc should not have elements, otherwise new_module_info does not fully contain old_module_info.
+        
+        if listc:
+          self.assertFalse(listc, "old_module_info has elements not in new_module_info")
+        else: # listc is empty
+          listd = [item for item in new_module_info if item not in old_module_info]
+          print("new added modules(could be empty):\n")
+          print(listd, "\n") # listd is also allowed to be empty, since new_module_info could be equal to old_module_info.
 
 
 class SideloadModulesTestCase(mt.MainlineTestCase):
@@ -190,10 +230,10 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
     Verify update on OEM devices via sideloading moduels. 
     """
 
-    maxDiff=None
-    version_info={'versionCode': '310000000', 'minSdk': '29', 'targetSdk': '31', 'versionName': '2021-09-01'}
-    module_info=['com.google.android.ext.services', 'com.google.android.permissioncontroller']
-    module_and_version={'com.google.android.ext.services': '310727000', 'com.google.android.permissioncontroller': '310733000', 'com.google.android.documentsui': '310727000'}
+    
+    # version_info={'versionCode': '310000000', 'minSdk': '29', 'targetSdk': '31', 'versionName': '2021-09-01'}
+    # module_info=['com.google.android.ext.services', 'com.google.android.permissioncontroller']
+    # module_and_version={'com.google.android.ext.services': '310727000', 'com.google.android.permissioncontroller': '310733000', 'com.google.android.documentsui': '310727000'}
 
     # def setUp(self):
     #     # self.maxDiff=None
@@ -228,7 +268,10 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
         print_whereami(self)
         # global old_version_info
         # old_version_info = self.get_train_version()
-        self.set_prop('version_info', self.get_train_version())
+        # self.set_prop('version_info', self.get_train_version())
+        version_content = self.get_train_version()
+        with open(VERSION_INFO_FILE, 'w') as f:
+            f.write(str(version_content))
         print_whereami(self)
 
 
@@ -237,7 +280,10 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
         print_whereami(self)
         # global old_module_info
         # old_module_info = self.get_module_list()
-        self.set_prop('module_info', self.get_module_list())
+        # self.set_prop('module_info', self.get_module_list())
+        module_content = self.get_module_list()
+        with open(MODULE_INFO_FILE, 'w') as f:
+            f.write(str(module_content))
         print_whereami(self)
 
     def test_05_train_get_module_and_version(self):
@@ -245,21 +291,30 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
         print_whereami(self)
         # global old_module_and_version
         # old_module_and_version = self.get_train_module_and_version()
-        self.set_prop('module_and_version', self.get_train_module_and_version())
-        print(self.get_prop('module_and_version'))
+        # self.set_prop('module_and_version', self.get_train_module_and_version())
+        # print(self.get_prop('module_and_version'))
+        module_and_version = self.get_train_module_and_version()
+        with open(MODULE_WITH_VERSION_FILE, 'w') as f:
+            f.write(str(module_and_version))
         print_whereami(self)
 
 
     def test_06_train_sideload_modules(self):
 
         print_whereami(self)
-        self.sideload_modules(bundletool, module_apks_path)
+        self.sideload_modules(BUNDLETOOL, MODULE_APKS_PATH)
 
         # sleep(6) # time buffer
         new_version_info = self.get_train_version()
-        old_version_info = self.get_prop('version_info')
+        # old_version_info = self.get_prop('version_info')
+        with open(VERSION_INFO_FILE, 'r') as f:
+            old_version_info = eval(f.read())
         print("\nold version info:\n")
         print(old_version_info)
+
+        with open(VERSION_INFO_FILE, 'a') as f:
+            f.write("\n\n" + str(new_version_info))
+
         self.assertTrue(int(new_version_info['versionCode']) > int(old_version_info['versionCode']))
         self.assertTrue(int(new_version_info['minSdk']) >= int(old_version_info['minSdk']))
         self.assertTrue(int(new_version_info['targetSdk']) >= int(old_version_info['targetSdk']))
@@ -270,8 +325,13 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
         self.assertTrue(new_date > old_date)
 
         new_module_info = self.get_module_list()
-        old_module_info = self.get_prop('module_info')
+        # old_module_info = self.get_prop('module_info')
+        with open(MODULE_INFO_FILE, 'r') as f:
+            old_module_info = eval(f.read())
         print("\nold modules:\n" + str(old_module_info))
+
+        with open(MODULE_INFO_FILE, 'a') as f:
+            f.write("\n\n" + str(new_module_info))
 
         # difference_set = set(new_module_info) - set(old_module_info)
         # # if the new set is greater than the old one, iow, the combined set has content
@@ -280,12 +340,12 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
 
         listc = [item for item in old_module_info if item not in new_module_info]
         # listc should not have elements, otherwise new_module_info does not fully contain old_module_info.
-        # self.assertFalse(listc, “old_module_info has elements not in new_module_info”)
+        # self.assertFalse(listc, "old_module_info has elements not in new_module_info")
         if listc:
           self.assertFalse(listc, "sideloading modules update failed, the amount of new modules after reboot is smaller than old ones before sideloading.")
         else: # listc is empty
           listd = [item for item in new_module_info if item not in old_module_info]
-          print("sideloading modules update succeeds, new added modules(could be empty):\n")
+          print("\nsideloading modules update succeeds, new added modules(could be empty):\n")
           print(listd, "\n") # listd is also allowed to be empty, since new_module_info could be equal to old_module_info.
 
         print_whereami(self)
@@ -295,12 +355,18 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
 
         print_whereami(self)
         try:
-            # self.sideloading(bundletool, module_apks_path)
+            # self.sideloading(BUNDLETOOL, MODULE_APKS_PATH)
 
             # rollback primary train modules, no effect for rollbacking moduels after sideloading..
             os.system("adb shell pm rollback-app com.google.android.modulemetadata")
-            old_module_and_version = self.get_prop('module_and_version')
+            # old_module_and_version = self.get_prop('module_and_version')
+            with open(MODULE_WITH_VERSION_FILE, 'r') as f:
+                old_module_and_version = eval(f.read())
+
             rollbacked_module_and_version = self.get_train_module_and_version()
+            with open(MODULE_WITH_VERSION_FILE, 'a') as f:
+                f.write("\n\n" + str(rollbacked_module_and_version))
+
             print("\ndetailed modules with their versionCode after rollback.\n")
             print(rollbacked_module_and_version, "\n")
             print("\ndetailed old modules with versionCode:\n")
@@ -316,22 +382,24 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
 
         print_whereami_head(self)
         try:
-            self.module_killer(intent_name, package_name, 2)
-            sleep(5)
-            old_mav = self.get_prop('module_and_version')
-            print(old_mav)
-            old_versioncode = old_mav[package_name]
+            mt.module_killer(intent_name, package_name, 2)
+            time.sleep(5)
+            # old_mav = self.get_prop('module_and_version')
+            with open(MODULE_WITH_VERSION_FILE, 'r') as f:
+                old_module_and_version = eval(f.read())
+            print(old_module_and_version)
+            old_versioncode = old_module_and_version[package_name]
             current_mav = self.get_train_module_and_version()
             print(current_mav)
             current_versioncode = current_mav[package_name]
             self.assertEqual(old_versioncode, current_versioncode, "rollback for " + package_name + " failed.")
         except KeyError:
-            print(package_name + " Not found in " + str(old_mav))
+            print(package_name + " Not found in " + str(old_module_and_version))
         finally:
             print_whereami_tail(self)
 
 
-    def test_08_train_rollback_particular_module(self):
+    def xtest_08_train_rollback_particular_module(self):
         testm1_intent="android.intent.action.OPEN_DOCUMENT_TREE"
         testm1_packagename="com.google.android.documentsui"
         testm2_intent=""
@@ -340,9 +408,9 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
         testm3_packagename=""
         print_whereami(self)
         try:
-            # self.sideloading(bundletool, module_apks_path)
+            # self.sideloading(BUNDLETOOL, MODULE_APKS_PATH)
             self.check_particular_module_rollback(testm1_intent, testm1_packagename)
-            sleep(6)
+            time.sleep(6)
             # self.check_particular_module_rollback(testm2_intent, testm2_packagename)
             # sleep(6)
             # self.check_particular_module_rollback(testm3_intent, testm3_packagename)
@@ -354,12 +422,18 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
 
 if __name__ == '__main__':
 
-    suite = unittest.TestSuite()
-    suite.addTest(ManualUpdateTestCase("test_07_train_get_version"))
+    # suite = unittest.makeSuite(ManualUpdateTestCase, 'test')
+    # suite.addTest(unittest.makeSuite(SideloadModulesTestCase))
+    suite = unittest.makeSuite(SideloadModulesTestCase, 'test')
+
+    # suite = unittest.TestSuite()
+    # suite.addTest(ManualUpdateTestCase("test_05_play_signin"))
+    # suite.addTest(ManualUpdateTestCase("test_06_play_check_version"))
+    # suite.addTest(ManualUpdateTestCase("test_07_train_get_version"))
     # suite.addTest(ManualUpdateTestCase("test_08_train_get_module_list"))
     # suite.addTest(ManualUpdateTestCase("test_09_train_trigger_instant_hygiene"))
     # suite.addTest(ManualUpdateTestCase("test_10_train_trigger_update"))
-    suite.addTest(ManualUpdateTestCase("test_11_train_verify_version"))
+    # suite.addTest(ManualUpdateTestCase("test_11_train_verify_version"))
     # suite.addTest(ManualUpdateTestCase("test_12_train_verify_module_list"))
 
     runner = unittest.TextTestRunner()
@@ -368,4 +442,16 @@ if __name__ == '__main__':
     # c1 = ManualUpdateTestCase()
     # c1.test_07_train_get_version()
 
-    
+    # c2 = SideloadModulesTestCase()
+    # c2.test_05_train_get_module_and_version()
+    # c2.test_06_train_sideload_modules()
+    # c2.xtest_07_train_rollback_modules()
+
+
+    # with(open('test/result.html', 'wb')) as fp:
+    #     runner = HTMLTestRunner(
+    #         stream=fp,
+    #         title='Mainline Update Test Report',
+    #         description='Try, no give up.'
+    #     )
+    #     runner.run(suite)

@@ -86,7 +86,17 @@ def chimera_debug():
 	os.system("adb shell am start -n com.google.android.gms/com.google.android.gms.chimera.debug.ChimeraDebugActivity")
 
 
+def activate_u2():
+	# d.open_notification() # triiger uiautomator2 to auto-recover if it's not working, like in the case just reboot.
+	d.press("back")
+	d.press("back")
+	d.press("home")
 
+
+def complete_setup_by_installing_app():
+	d.open_notification()
+	d(textContains="Complete setup").click()
+	d(text="Ok").click()
 
 
 ######################################

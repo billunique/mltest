@@ -9,9 +9,13 @@ from time import sleep
 import unittest
 
 import uiautomator2 as u2
+# from uiautomator2 import UiObjectNotFoundError
 import system_common as sc
 from utils import print_whereami_head, print_whereami_tail, whereami_logger
 
+
+TEST_ACCOUNT='wx.test1'
+PASSWORD='G00gl3test'
 
 d = u2.connect()
 
@@ -55,26 +59,38 @@ def open_play_account_menu():
 
 def is_play_latest():
 
-    open_play_account_menu()
-    d(text="Settings").click()
-    d(text="About").click()
-    d(text="Play Store version").click()
-    if d(textContains="A new version").wait(timeout=3.0):
-        d(text="Got it").click()
-        print('\nPlay store need to be updated.')
-        d.screenshot("test_data/play_store_need_update.png")
-        uptodate = False
-    else:
-        print("\nPlay store is already up-to-date.")
-        d.screenshot("test_data/play_store_latest.png")
-        uptodate = True
+    attempts = 3
+    for i in range(attempts):
+        try:
+            open_play_account_menu()
+            d(text="Settings").click()
+            d(text="About").click()
+            d(text="Play Store version").click()
+            if d(textContains="A new version").wait(timeout=3.0):
+                print('\nPlay store need to be updated.')
+                d.screenshot("test_data/play_store_need_update.png")
+                uptodate = False
+            else:
+                print("\nPlay store is already up-to-date.")
+                d.screenshot("test_data/play_store_latest.png")
+                uptodate = True
+            d(text="Got it").click()
+            return uptodate
 
-    return uptodate
+        except u2.UiObjectNotFoundError:
+            if i < attempts -1: # i steps from 0
+                continue
+            else:
+                raise
+        break
 
 
-def check_play_update_menu_shown(timeout=60):
+def check_play_update_menu_shown(timeout=90):
+    try:
+        latest = is_play_latest()
+    except u2.UiObjectNotFoundError:
+        play_login(TEST_ACCOUNT, PASSWORD)
 
-    latest = is_play_latest()
     if not latest:
         timeout = timeout
         deadline = time.time() + timeout
@@ -87,13 +103,18 @@ def check_play_update_menu_shown(timeout=60):
             if d(text="Google Play system update").exists(timeout=2.0):
                 print("Google Play system update menu has shown.")
                 sleep(1)
-                break
+                # break
+                return True
             else:
                 sc.stop_Settings_activity()
                 sleep(5)
                 continue
     else:
         print("\nIt has been the lastest Google Play.")
+        sc.to_Settings_Security()
+        return d(text="Google Play system update").exists(timeout=2.0)
+
+
 
 
 def trigger_module_update():
@@ -120,10 +141,12 @@ def play_login(account_name, pswd):
     for i in range(attempts):
         try:
             open_google_play()
+            sleep(3)
             d(resourceId="com.android.vending:id/0_resource_name_obfuscated", text="Sign in").click()
+            sleep(3)
             minutemaid_login(account_name, pswd)
 
-        except UiObjectNotFoundError:
+        except u2.UiObjectNotFoundError:
             if i < attempts -1: # i steps from 0
                 continue
             else:
@@ -148,7 +171,7 @@ def minutemaid_login(account_name, pswd):
         sleep(1)
         # d.send_keys(account_name)
         d(focused=True).set_text(account_name)
-        sleep(1)
+        sleep(2)
         d(text="Next").click()
         sleep(2)
         # d.send_keys(pswd, clear=True)
@@ -270,6 +293,7 @@ class MainlineTestCase(unittest.TestCase):
 
     #     super(MainlineTestCase, self).__init__(*args, **kwargs)
         
+    maxDiff=None
 
     def get_train_version(self) -> dict:
 
