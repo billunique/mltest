@@ -6,11 +6,12 @@ import os
 import sys
 import time
 from time import sleep
+import datetime
 import unittest
 
 import uiautomator2 as u2
 # from uiautomator2 import UiObjectNotFoundError
-import system_common as sc
+import system_common as sysc
 from utils import print_whereami_head, print_whereami_tail, whereami_logger
 
 
@@ -49,6 +50,11 @@ def open_play_account_menu():
         # click the account avatar by coordinate, no better ways.
         else:
             d.click(0.89, 0.072)
+            # for older version Google Play
+            if not d(text="Settings").exists(timeout=2.0):
+                d.press("back")
+                d.xpath('//*[@content-desc="Show navigation drawer"]/android.widget.ImageView[1]').click()  # open menu by clicking the left corner image button.
+
     except u2.UiObjectNotFoundError:
         # exit all activity to return to home screen.
         for i in range(1, 6):
@@ -64,7 +70,12 @@ def is_play_latest():
         try:
             open_play_account_menu()
             d(text="Settings").click()
+            time.sleep(2)
+            if d(scrollable=True):
+                d(scrollable=True).fling.toEnd()
             d(text="About").click()
+            if d(scrollable=True):
+                d(scrollable=True).fling.toEnd()
             d(text="Play Store version").click()
             if d(textContains="A new version").wait(timeout=3.0):
                 print('\nPlay store need to be updated.')
@@ -74,7 +85,10 @@ def is_play_latest():
                 print("\nPlay store is already up-to-date.")
                 d.screenshot("test_data/play_store_latest.png")
                 uptodate = True
-            d(text="Got it").click()
+            if d(text="Got it").exists():
+                d(text="Got it").click()
+            else:
+                d(text="OK").click()
             return uptodate
 
         except u2.UiObjectNotFoundError:
@@ -98,7 +112,7 @@ def check_play_update_menu_shown(timeout=90):
         # for i in range(10):
             # sleep(2)
             print("\nwait the update of Google Play to complete...")
-            sc.to_Settings_Security()
+            sysc.to_Settings_Security()
             # check if the Google Play system update item has shown, thus the test can go next.
             if d(text="Google Play system update").exists(timeout=2.0):
                 print("Google Play system update menu has shown.")
@@ -106,12 +120,12 @@ def check_play_update_menu_shown(timeout=90):
                 # break
                 return True
             else:
-                sc.stop_Settings_activity()
+                sysc.stop_Settings_activity()
                 sleep(5)
                 continue
     else:
         print("\nIt has been the lastest Google Play.")
-        sc.to_Settings_Security()
+        sysc.to_Settings_Security()
         return d(text="Google Play system update").exists(timeout=2.0)
 
 
@@ -142,8 +156,17 @@ def play_login(account_name, pswd):
         try:
             open_google_play()
             sleep(3)
-            d(resourceId="com.android.vending:id/0_resource_name_obfuscated", text="Sign in").click()
+            # d(resourceId="com.android.vending:id/0_resource_name_obfuscated", text="Sign in").click()
+            # "SIGN IN" case fits for some old version Google Play.
+            for text in ["Sign in", "SIGN IN"]:
+                try:
+                    d(text=text).click()
+                except u2.UiObjectNotFoundError:
+                    pass
+                    continue
             sleep(3)
+            if d(text="Couldn't sign in").exists(timeout=2.0): # Wifi's not ready in this case.
+                continue
             minutemaid_login(account_name, pswd)
 
         except u2.UiObjectNotFoundError:
@@ -254,29 +277,22 @@ def test_remove_all_google_accounts():
         stop_Settings_activity()
 
 
-def module_killer(intent_name: str, package_name: str, kill_times=10):
-    """
-    intent_name sample: android.intent.action.OPEN_DOCUMENT_TREE
-    package_name sample: com.google.android.documentsui
-    """
-    print("Will kill poor " + package_name + " " + str(kill_times) + " times......\n")
-    for i in range(kill_times):
-        os.system("adb shell am start -a " + intent_name) 
-        sleep(4)
-        os.system("adb shell am crash " + package_name)
-        sleep(2)
+def open_traineng():
+    os.system("adb shell am start -n com.google.android.trainengineer/.TrainEngineer")
 
 
-def device_waitor(base_wait_time):
-    """ wait the device to be connected, once connected exit waiting and go next, otherwise keep waiting. """
-    sleep(base_wait_time)
-    while True:
-        sleep(2)
-        print("waiting for device to be connected...")
-        adb_devices_line = os.popen('adb devices |grep device |wc -l').read().strip()
-        if int(adb_devices_line) > 1:
-            sleep(10)
-            break
+def _install_traineng_and_capture():
+
+    apk_dir = './archive/trainengineer.apk'
+    if apk_dir:
+        sysc.install_apk(apk_dir)
+        time.sleep(3)
+        open_traineng()
+        time.sleep(2)
+        time_format = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S.%f")
+        d.screenshot('./test_data/traineng1_' + time_format + '.png')
+        d(scrollable=True).fling.toEnd()
+        d.screenshot('./test_data/traineng2_' + time_format + '.png')
 
 
 
@@ -380,7 +396,7 @@ class MainlineTestCase(unittest.TestCase):
         # remove the last ','
         bundle_apks_string = bundle_apks_string[:len(bundle_apks_string) - 1]
         # print(bundle_apks_string)
-        install_cmd = 'java -jar ' + bundletool_path + ' install-multi-apks --apks ' + bundle_apks_string
+        install_cmd = 'java -jar ' + bundletool_path + ' install-multi-apks --enable-rollback --apks ' + bundle_apks_string
         # os.system(install_cmd)
         # use split() to perfectly prepare the command format (a list) to subprocess
         proc = subprocess.Popen(install_cmd.split(), stdout=subprocess.PIPE, universal_newlines=True)
@@ -397,16 +413,20 @@ class MainlineTestCase(unittest.TestCase):
 
         # sleep(66)
         os.system('adb reboot')
-        device_waitor(40)
+        sysc.device_waitor(40)
 
 
 
 if __name__ == '__main__':
 
     # globals()[sys.argv[1]]()
+    _install_traineng_and_capture()
     
-    c1 = MainlineTestCase()
+    # is_play_latest()
+    # play_login(TEST_ACCOUNT, PASSWORD)
+    # c1 = MainlineTestCase()
     # c1.get_train_version()
-    c1.get_module_list()
+    # c1.get_module_list()
     # c1.get_train_module_and_version()
+    # c1.sideload_modules('bundletool-all-1.8.2.jar', 'S_modules/')
 

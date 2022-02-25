@@ -64,7 +64,7 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
         sysc.enable_testharness() 
         # # wait 2.5 minutes for the device to finish reset and reboot into desktop.
         # sleep(150)
-        mt.device_waitor(110)
+        sysc.device_waitor(110)
 
 
     def test_02_calm_the_screen(self):
@@ -79,6 +79,7 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
     def test_04_connect_to_wifi(self):
 
         sysc.connect_to_wifi(WIFI_SSID, WIFI_PASSWORD)
+        time.sleep(5)
 
 
     def test_05_play_signin(self):
@@ -113,6 +114,7 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
     def test_09_train_trigger_instant_hygiene(self):
 
         print_whereami(self)
+        mt._install_traineng_and_capture()
         try:
             mt.is_play_latest()
         except u2.UiObjectNotFoundError:
@@ -132,6 +134,7 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
 
     def test_10_train_trigger_update(self):
 
+        print_whereami(self)
         time.sleep(5)
         attempts = 3
         for i in range(attempts):
@@ -153,10 +156,12 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
                 # Already up to date (installed and rebooted)
                 elif d(textContains="up to date").wait(timeout=10.0):
                     d.screenshot(TEST_DATA_PATH + "train_up_to_date.png")
+                    print("\nNo update available, it says the device is up to date. Please check the path " + TEST_DATA_PATH + " for screenshot.")
+                    break
                 else:
                     self.assertTrue(False, "Google Play system update window not found, probably Play Store is too old.")
 
-                mt.device_waitor(50)
+                sysc.device_waitor(50)
 
             except AssertionError:
                 if i < attempts -1: # i steps from 0
@@ -167,11 +172,13 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
                 else:
                     raise
             break
+            print_whereami(self)
 
       
 
     def test_11_train_verify_version(self):
 
+        print_whereami(self)
         new_version_info = self.get_train_version()
         with open(VERSION_INFO_FILE, 'r') as f:
             old_version_info=eval(f.read()) # use eval() to covert string to it's "should be" intellgently.
@@ -191,10 +198,13 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
         old_date = time.strptime(old_version_info['versionName'], '%Y-%m-%d')
         new_date = time.strptime(new_version_info['versionName'], '%Y-%m-%d')
         self.assertTrue(new_date > old_date)
+        print_whereami(self)
 
 
     def test_12_train_verify_module_list(self):
 
+        print_whereami(self)
+        mt._install_traineng_and_capture()
         new_module_info = self.get_module_list()
         with open(MODULE_INFO_FILE, 'r') as f:
             old_module_info = eval(f.read())
@@ -223,6 +233,8 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
           listd = [item for item in new_module_info if item not in old_module_info]
           print("new added modules(could be empty):\n")
           print(listd, "\n") # listd is also allowed to be empty, since new_module_info could be equal to old_module_info.
+
+        print_whereami(self)
 
 
 class SideloadModulesTestCase(mt.MainlineTestCase):
@@ -255,7 +267,7 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
 
         sysc.enable_testharness() 
         # wait 2.5 minutes for the device to finish reset and reboot into desktop.
-        mt.device_waitor(120)
+        sysc.device_waitor(120)
 
 
     def test_02_calm_the_screen(self):
@@ -355,10 +367,14 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
 
         print_whereami(self)
         try:
-            # self.sideloading(BUNDLETOOL, MODULE_APKS_PATH)
+            # self.sideload_modules(BUNDLETOOL, MODULE_APKS_PATH)
 
-            # rollback primary train modules, no effect for rollbacking moduels after sideloading..
-            os.system("adb shell pm rollback-app com.google.android.modulemetadata")
+            # rollback primary train modules
+            time.sleep(10)
+            command="adb shell pm rollback-app com.google.android.modulemetadata"
+            sysc.wait_till_finished(command)
+            sysc.reboot_device()
+            sysc.device_waitor(30)
             # old_module_and_version = self.get_prop('module_and_version')
             with open(MODULE_WITH_VERSION_FILE, 'r') as f:
                 old_module_and_version = eval(f.read())
@@ -382,17 +398,28 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
 
         print_whereami_head(self)
         try:
-            mt.module_killer(intent_name, package_name, 2)
             time.sleep(5)
+            current_activity = sysc.get_current_activity()
+            while True:
+                if 'launcher' in current_activity:
+                    sysc.module_killer(intent_name, package_name, 5)
+                    break
+                else:
+                    time.sleep(5)
+                    continue
+
+            time.sleep(60)
             # old_mav = self.get_prop('module_and_version')
             with open(MODULE_WITH_VERSION_FILE, 'r') as f:
                 old_module_and_version = eval(f.read())
-            print(old_module_and_version)
+            print("\nold package names with their versions:\n", old_module_and_version)
             old_versioncode = old_module_and_version[package_name]
             current_mav = self.get_train_module_and_version()
             print(current_mav)
             current_versioncode = current_mav[package_name]
             self.assertEqual(old_versioncode, current_versioncode, "rollback for " + package_name + " failed.")
+            # remove the key-value of specific package, the others should be equal, as they don't roallback.
+            self.assertDictEqual(old_module_and_version.pop(package_name), current_mav.pop(package_name))
         except KeyError:
             print(package_name + " Not found in " + str(old_module_and_version))
         finally:
@@ -424,7 +451,7 @@ if __name__ == '__main__':
 
     # suite = unittest.makeSuite(ManualUpdateTestCase, 'test')
     # suite.addTest(unittest.makeSuite(SideloadModulesTestCase))
-    suite = unittest.makeSuite(SideloadModulesTestCase, 'test')
+    # suite = unittest.makeSuite(SideloadModulesTestCase, 'test')
 
     # suite = unittest.TestSuite()
     # suite.addTest(ManualUpdateTestCase("test_05_play_signin"))
@@ -436,16 +463,19 @@ if __name__ == '__main__':
     # suite.addTest(ManualUpdateTestCase("test_11_train_verify_version"))
     # suite.addTest(ManualUpdateTestCase("test_12_train_verify_module_list"))
 
-    runner = unittest.TextTestRunner()
-    runner.run(suite)
+    # runner = unittest.TextTestRunner()
+    # runner.run(suite)
 
     # c1 = ManualUpdateTestCase()
     # c1.test_07_train_get_version()
 
-    # c2 = SideloadModulesTestCase()
-    # c2.test_05_train_get_module_and_version()
-    # c2.test_06_train_sideload_modules()
-    # c2.xtest_07_train_rollback_modules()
+    c2 = SideloadModulesTestCase()
+    # c2.test_03_train_get_version()
+    # c2.test_04_train_get_module_list()
+    c2.test_05_train_get_module_and_version()
+    c2.sideload_modules(BUNDLETOOL, MODULE_APKS_PATH)
+    # c2.test_07_train_rollback_modules()
+    c2.xtest_08_train_rollback_particular_module()
 
 
     # with(open('test/result.html', 'wb')) as fp:

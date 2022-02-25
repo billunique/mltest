@@ -1,6 +1,7 @@
 # coding: utf-8
 #
 import sys
+import subprocess
 import os
 import logging
 from time import sleep
@@ -97,6 +98,59 @@ def complete_setup_by_installing_app():
 	d.open_notification()
 	d(textContains="Complete setup").click()
 	d(text="Ok").click()
+
+
+def reboot_device():
+	os.system("adb reboot")
+
+
+def get_current_activity():
+	activity_info = os.popen("adb shell dumpsys activity activities | grep mResumedActivity").read()
+	activity_name = activity_info.split()[-2]
+	print(activity_info)
+	return activity_name
+
+
+def module_killer(intent_name: str, package_name: str, kill_times=10):
+    """
+    intent_name sample: android.intent.action.OPEN_DOCUMENT_TREE
+    package_name sample: com.google.android.documentsui
+    """
+    print("Will kill poor " + package_name + " " + str(kill_times) + " times......\n")
+    for i in range(kill_times):
+        os.system("adb shell am start -a " + intent_name) 
+        sleep(4)
+        os.system("adb shell am crash " + package_name)
+        sleep(2)
+
+
+def device_waitor(base_wait_time):
+    """ wait the device to be connected, once connected exit waiting and go next, otherwise keep waiting. """
+    sleep(base_wait_time)
+    while True:
+        sleep(2)
+        print("waiting for device to be connected...")
+        adb_devices_line = os.popen('adb devices |grep device |wc -l').read().strip()
+        if int(adb_devices_line) > 1:
+            sleep(10)
+            break
+
+
+def wait_till_finished(command):
+	# use split() to perfectly prepare the command format (a list) to subprocess
+    proc = subprocess.Popen(command.split(), stdout=subprocess.PIPE, universal_newlines=True)
+    (output, err) = proc.communicate()
+    print(output)
+
+    while True:
+        sleep(1)
+        # poll() function to check the return code of the process. It will return None while the process is still running.
+        return_code = proc.poll()
+        if return_code is not None:
+            # Process has finished
+            sleep(3) # time buffer
+            break
+
 
 
 ######################################
@@ -250,7 +304,7 @@ def test_d_conflict():
 
 if __name__ == '__main__':
 	# globals()[sys.argv[1]](sys.argv[2], (sys.argv[3])) # need to be flexible.
-	globals()[sys.argv[1]]()
+	# globals()[sys.argv[1]]()
 	# to_Settings()
 	# to_Settings_Security()
 	# install_mobly_apk()
@@ -260,3 +314,5 @@ if __name__ == '__main__':
 	# setup_wizard_dealer("wx.test1", "G00gl3test")
 	# to_Settings_item("Display")
 	# open_usb_debug()
+	command="adb shell pm rollback-app com.google.android.modulemetadata"
+	wait_till_finished(command)
