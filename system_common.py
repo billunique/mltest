@@ -57,6 +57,7 @@ def enable_testharness():
 
 def install_apk(apk_dir):
 
+	print("\ninstalling " + apk_dir + " ......")
 	os.system('adb install -r -d -g ' + apk_dir)
 
 
@@ -87,10 +88,10 @@ def chimera_debug():
 	os.system("adb shell am start -n com.google.android.gms/com.google.android.gms.chimera.debug.ChimeraDebugActivity")
 
 
-def activate_u2():
+def back2home():
 	# d.open_notification() # triiger uiautomator2 to auto-recover if it's not working, like in the case just reboot.
-	d.press("back")
-	d.press("back")
+	for i in range(6):
+	    d.press("back")
 	d.press("home")
 
 
@@ -304,15 +305,15 @@ def test_d_conflict():
 
 if __name__ == '__main__':
 	# globals()[sys.argv[1]](sys.argv[2], (sys.argv[3])) # need to be flexible.
-	# globals()[sys.argv[1]]()
+	# globals()[sys.argv[1:]]()
 	# to_Settings()
 	# to_Settings_Security()
 	# install_mobly_apk()
-	# connect_to_wifi()
+	connect_to_wifi("wx.test1", "G00gl3test")
 	# screen_stay_on()
 	# test_remove_all_google_accounts()
 	# setup_wizard_dealer("wx.test1", "G00gl3test")
 	# to_Settings_item("Display")
 	# open_usb_debug()
-	command="adb shell pm rollback-app com.google.android.modulemetadata"
-	wait_till_finished(command)
+	# command="adb shell pm rollback-app com.google.android.modulemetadata"
+	# wait_till_finished(command)

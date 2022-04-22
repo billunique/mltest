@@ -17,12 +17,16 @@ from utils import print_whereami_head, print_whereami_tail, whereami_logger
 
 TEST_ACCOUNT='wx.test1'
 PASSWORD='G00gl3test'
+WIFI_SSID='GoogleGuestPSK'
+WIFI_PASSWORD='pUp3EkaP'
 
 d = u2.connect()
+
 
 def open_google_play():
 
     os.system("adb shell am start -n com.android.vending/.AssetBrowserActivity")
+    # os.system("adb shell am start -n com.android.vending/com.google.android.finsky.unauthenticated.activity.UnauthenticatedMainActivity")
 
 
 def force_stop_play():
@@ -40,27 +44,35 @@ def force_stop_play():
 
 def open_play_account_menu():
 
-    try:
-        # open_google_play_by_icon()
-        open_google_play()
-        sleep(1)
-        # account menu already opened.
-        if d(text="Library").wait(timeout=2.0):
-            pass
-        # click the account avatar by coordinate, no better ways.
-        else:
-            d.click(0.89, 0.072)
-            # for older version Google Play
-            if not d(text="Settings").exists(timeout=2.0):
-                d.press("back")
-                d.xpath('//*[@content-desc="Show navigation drawer"]/android.widget.ImageView[1]').click()  # open menu by clicking the left corner image button.
+    attempts = 3
+    for i in range(attempts):
+        try:
+            # open_google_play_by_icon()
+            open_google_play()
+            sleep(1)
+            # account menu already opened.
+            if d(text="Library").wait(timeout=2.0):
+                pass
+            # click the account avatar by coordinate, no better ways.
+            else:
+                d.click(0.89, 0.072)
+                # for older version Google Play
+                if not d(text="Settings").exists(timeout=2.0):
+                    d.press("back")
+                    d.xpath('//*[@content-desc="Show navigation drawer"]/android.widget.ImageView[1]').click()  # open menu by clicking the left corner image button.
 
-    except u2.UiObjectNotFoundError:
-        # exit all activity to return to home screen.
-        for i in range(1, 6):
-            d.press("back")
-
-        open_play_account_menu()
+        # except u2.UiObjectNotFoundError:
+        # except u2.exceptions.XPathElementNotFoundError:
+        except:
+            # exit all activity to return to home screen.
+            sysc.back2home()
+            play_login(TEST_ACCOUNT, PASSWORD, WIFI_SSID, WIFI_PASSWORD)
+            if i < attempts -1: # i steps from 0
+                continue
+                # open_play_account_menu() # this may cause infinite loop.
+            else:
+                raise
+        break
 
 
 def is_play_latest():
@@ -92,6 +104,8 @@ def is_play_latest():
             return uptodate
 
         except u2.UiObjectNotFoundError:
+            sysc.back2home()
+            play_login(TEST_ACCOUNT, PASSWORD, WIFI_SSID, WIFI_PASSWORD)
             if i < attempts -1: # i steps from 0
                 continue
             else:
@@ -103,7 +117,8 @@ def check_play_update_menu_shown(timeout=90):
     try:
         latest = is_play_latest()
     except u2.UiObjectNotFoundError:
-        play_login(TEST_ACCOUNT, PASSWORD)
+        play_login(TEST_ACCOUNT, PASSWORD, WIFI_SSID, WIFI_PASSWORD)
+        latest = is_play_latest()
 
     if not latest:
         timeout = timeout
@@ -131,25 +146,7 @@ def check_play_update_menu_shown(timeout=90):
 
 
 
-def trigger_module_update():
-
-    os.system("adb shell am start -a android.settings.MODULE_UPDATE_SETTINGS")
-    # os.system("adb shell am start -n com.android.vending/com.google.android.finsky.systemupdateactivity.SystemUpdateActivity")
-
-
-def trigger_instant_hygiene():
-
-    os.system("adb shell am start-foreground-service -n com.android.vending/com.google.android.finsky.shellservice.ProdShellService --es command trigger_instant_hygiene")
-
-
-def trigger_instant_self_update():
-
-    os.system("adb shell am start-foreground-service -n com.android.vending/com.google.android.finsky.shellservice.ProdShellService --es command trigger_instant_self_update")
-
-
-
-
-def play_login(account_name, pswd):
+def play_login(account_name, pswd, ssid, wifi_pswd):
 
     attempts = 3
     for i in range(attempts):
@@ -166,6 +163,7 @@ def play_login(account_name, pswd):
                     continue
             sleep(3)
             if d(text="Couldn't sign in").exists(timeout=2.0): # Wifi's not ready in this case.
+                sysc.connect_to_wifi(ssid, wifi_pswd)
                 continue
             minutemaid_login(account_name, pswd)
 
@@ -181,7 +179,7 @@ def play_login(account_name, pswd):
 
 def minutemaid_login(account_name, pswd):
 
-    d.implicitly_wait(18.0)
+    # d.implicitly_wait(18.0)
     if d.wait_activity(".auth.uiflows.minutemaid.MinuteMaidActivity", timeout=30):
         # redundant click and wait to improve the success rate.
         # d(resourceId="identifierId").click()
@@ -293,6 +291,55 @@ def _install_traineng_and_capture():
         d.screenshot('./test_data/traineng1_' + time_format + '.png')
         d(scrollable=True).fling.toEnd()
         d.screenshot('./test_data/traineng2_' + time_format + '.png')
+        sysc.back2home()
+
+
+def check_if_train_staged():
+    print("\nchecking if new train module has been staged.......\n")
+    proc  = subprocess.Popen("adb logcat -v brief", stdout=subprocess.PIPE, universal_newlines=True, shell=True)
+    for line in proc.stdout:
+        if all(x in line for x in ["staged ready", "mainline.telemetry"]): #UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0
+            print("\n********** Autoupdate - Train telemetry staged ready! ************")
+        if all(x in line for x in ["staged ready", "mainline_train_primary"]):
+            print("\n********** Autoupdate - Train primary staged ready! ************")
+            proc.kill()
+
+
+def test_if_train_staged():
+    print("\nchecking if new train module already staged.......\n")
+    # proc  = subprocess.Popen("adb logcat -t 100000", stdout=subprocess.PIPE, universal_newlines=True, shell=True)
+    proc = os.popen("adb logcat -t 100000 |grep 'staged ready'").read()
+    if all(x in proc for x in ["staged ready", "mainline.telemetry"]): #UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0
+        print("\n********** Autoupdate - Train telemetry staged ready! ************")
+    if all(x in proc for x in ["staged ready", "mainline_train_primary"]):
+        print("\n********** Autoupdate - Train primary staged ready! ************")
+
+
+
+def trigger_module_update():
+
+    os.system("adb shell am start -a android.settings.MODULE_UPDATE_SETTINGS")
+    # os.system("adb shell am start -n com.android.vending/com.google.android.finsky.systemupdateactivity.SystemUpdateActivity")
+
+
+def trigger_instant_hygiene():
+
+    os.system("adb shell am start-foreground-service -n com.android.vending/com.google.android.finsky.shellservice.ProdShellService --es command trigger_instant_hygiene")
+
+def trigger_instant_self_update_prod():
+
+    os.system("adb shell am start-foreground-service -n com.android.vending/com.google.android.finsky.shellservice.ProdShellService --es command trigger_instant_self_update")
+
+
+def trigger_instant_self_update_debug():
+
+    os.system("adb shell am startservice -n com.android.vending/com.google.android.finsky.services.DebugService --es command trigger_instant_self_update")
+
+def run_hygiene_debug():
+
+    os.system("adb shell am startservice -n com.android.vending/com.google.android.finsky.services.DebugService --es command run_hygiene")
+
+
 
 
 
@@ -420,7 +467,10 @@ class MainlineTestCase(unittest.TestCase):
 if __name__ == '__main__':
 
     # globals()[sys.argv[1]]()
-    _install_traineng_and_capture()
+    # _install_traineng_and_capture()
+    # check_if_train_staged()
+    # test_if_train_staged()
+    open_play_account_menu()
     
     # is_play_latest()
     # play_login(TEST_ACCOUNT, PASSWORD)
