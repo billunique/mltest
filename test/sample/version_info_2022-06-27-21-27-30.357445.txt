@@ -1,0 +1,3 @@
+{'versionCode': '310005800', 'minSdk': '29', 'targetSdk': '31', 'versionName': '2021-09-01'}
+
+{'versionCode': '310005800', 'minSdk': '29', 'targetSdk': '31', 'versionName': '2021-09-01'}

@@ -42,7 +42,7 @@ parser.add_argument("-c", "--config", help="feed the configuration info for the 
 args = parser.parse_args()
 
 if args.config:
-    print("\nread configuration from " + args.config)
+    print("\nreading configuration from " + args.config)
     cfg = ConfigParser()
     cfg.read(args.config)
     for each in cfg.sections():
@@ -58,7 +58,7 @@ if args.config:
     MOBLY_APK_DIR=testinfo['MOBLY_APK_DIR']
 
 
-TEST_DATA_PATH = "./test_data/"
+TEST_DATA_PATH = "./test/data/"
 time_format = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S.%f")
 VERSION_INFO_FILE= TEST_DATA_PATH + "version_info" + "_" + time_format + ".txt"
 MODULE_INFO_FILE = TEST_DATA_PATH + "module_info" + "_" + time_format + ".txt"
@@ -71,7 +71,303 @@ def filename_generator(base_name):
     filename = base_name + "_" + time_format
     return filename
 
+
 d = u2.connect()
+
+def enable_testharness_setupenv():
+    sysc.enable_testharness() 
+    sysc.device_waitor(120)
+    sysc.screen_stay_on()
+    sysc.install_apk(MOBLY_APK_DIR)
+    # sysc.install_apk(PLAY_DEBUG_APK)
+    time.sleep(5)
+    sysc.connect_to_wifi(WIFI_SSID, WIFI_PASSWORD)
+    time.sleep(5)
+    sysc.back2home()
+    time.sleep(5)
+
+
+def trigger_google_play_update_and_hygiene():
+
+    try:
+        mt.play_login(TEST_ACCOUNT, PASSWORD, WIFI_SSID, WIFI_PASSWORD)
+        mt.is_play_latest()
+
+    except u2.UiObjectNotFoundError:
+        mt.play_login(TEST_ACCOUNT, PASSWORD, WIFI_SSID, WIFI_PASSWORD)
+        mt.is_play_latest()
+
+    sysc.back2home()
+    time.sleep(60) # wait for Play to update
+
+    attempts = 3
+    for i in range(attempts):
+        if mt.is_play_latest(): # if Play is now up-to-date
+            time.sleep(5)
+            mt.trigger_instant_hygiene()
+            sysc.back2home()
+            time.sleep(50)
+            mt.force_stop_play() # this step counts!
+        else:
+            mt.force_stop_play()
+            time.sleep(60)
+            if i < attempts -1: # i steps from 0
+                continue
+            else:
+                raise
+        break
+
+
+def trigger_mt_autoupdate():
+
+    trigger_google_play_update_and_hygiene()
+    
+    time.sleep(60) # wait for autoupdate to complete its process.
+
+    # mt.trigger_instant_self_update_prod()
+
+    # print("\nchecking if new train module already staged.......\n")
+    # proc  = subprocess.Popen("adb logcat", stdout=subprocess.PIPE, universal_newlines=True, shell=True)
+    # for line in proc.stdout:
+    #     if "staged ready" in line:
+    #         print("\n********** Autoupdate - Train staged ready! ************")
+    #         proc.kill()
+
+    is_train_staged = mt.see_if_train_staged()
+
+    sysc.back2home()
+
+    return is_train_staged
+
+
+def check_for_update_on_UI():
+
+    attempts = 3
+    for i in range(attempts):
+        try:
+            mt.trigger_module_update()
+            # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SettingsSecurityEntryPoint", timeout=10.0):
+            # System update available
+            if d(textContains="Download").exists(timeout=10.0):
+                d.screenshot(TEST_DATA_PATH + "system_update_available" + "_" + time_format + ".png")
+                d(text="Download & install").click()
+                # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
+                assert (d(textContains="Restart").wait(timeout=120.0)), "Download & install probably not started or failed in 2 minutes."
+                d(text="Restart now").click()
+
+            # Already silently installed updates
+            elif d(textContains="Restart").wait(timeout=10.0):
+                d.screenshot(TEST_DATA_PATH + "train_restart_to_update" + "_" + time_format + ".png")
+                d(text="Restart now").click()
+            # Already up to date (installed and rebooted)
+            elif d(textContains="up to date").wait(timeout=10.0):
+                d.screenshot(TEST_DATA_PATH + "train_up_to_date" + "_" + time_format + ".png")
+                print("\nNo update available, it says the device is up to date. Please check the path " + TEST_DATA_PATH + " for screenshot.")
+                break
+            else:
+                print("Google Play system update window not found, probably Play Store is too old.")
+                return False
+
+            sysc.device_waitor(50)
+
+            mt.trigger_module_update()
+            if d(textContains="Download").exists(timeout=10.0):
+                d.screenshot(TEST_DATA_PATH + "system_update_available.png")
+                d(text="Download & install").click()
+                # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
+                assert (d(textContains="Restart").wait(timeout=120.0)), "Download & install probably not started or failed in 2 minutes."
+                d(text="Restart now").click()
+                sysc.device_waitor(50)
+            else:
+                sysc.back2home()
+
+
+        except AssertionError:
+            if i < attempts -1: # i steps from 0
+                d.press("back")
+                mt.trigger_instant_self_update_prod() #just placebo
+                time.sleep(20)
+                continue
+            else:
+                raise
+
+
+class AutoUpdateTestCase(mt.MainlineTestCase):
+
+
+    def test_001_autoupdate(self):
+        print_whereami(self)
+        enable_testharness_setupenv()
+
+        # mt.play_login(TEST_ACCOUNT, PASSWORD, WIFI_SSID, WIFI_PASSWORD)
+
+        version_content = self.get_train_version()
+        with open(VERSION_INFO_FILE, 'w') as f:
+            f.write(str(version_content))
+
+        module_content = self.get_module_list()
+        with open(MODULE_INFO_FILE, 'w') as f:
+            f.write(str(module_content))
+
+        mt._install_traineng_and_capture()
+
+        self.assertTrue(trigger_mt_autoupdate(), "Mainline train not staged in nearly 10 minutes... Autoupdat failed!")
+        self.assertTrue(mt.check_play_update_menu_shown())
+
+        time.sleep(5)
+        attempts = 3
+        for i in range(attempts):
+            try:
+                mt.trigger_module_update()
+                # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SettingsSecurityEntryPoint", timeout=10.0):
+                # System update available
+                if d(textContains="Download").exists(timeout=10.0):
+                    d.screenshot(TEST_DATA_PATH + "system_update_available.png")
+                    d(text="Download & install").click()
+                    # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
+                    self.assertTrue(d(textContains="Restart").wait(timeout=120.0), "Download & install probably not started or failed in 2 minutes.")
+                    d(text="Restart now").click()
+
+                # Already silently installed updates
+                elif d(textContains="Restart").wait(timeout=10.0):
+                    d.screenshot(TEST_DATA_PATH + "train_restart_to_update.png")
+                    d(text="Restart now").click()
+                # Already up to date (installed and rebooted)
+                elif d(textContains="up to date").wait(timeout=10.0):
+                    d.screenshot(TEST_DATA_PATH + "train_up_to_date.png")
+                    print("\nNo update available, it says the device is up to date. Please check the path " + TEST_DATA_PATH + " for screenshot.")
+                    break
+                else:
+                    self.assertTrue(False, "Google Play system update window not found, probably Play Store is too old.")
+
+                sysc.device_waitor(50)
+
+                mt.trigger_module_update()
+                if d(textContains="Download").exists(timeout=10.0):
+                    d.screenshot(TEST_DATA_PATH + "system_update_available.png")
+                    d(text="Download & install").click()
+                    # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
+                    self.assertTrue(d(textContains="Restart").wait(timeout=120.0), "Download & install probably not started or failed in 2 minutes.")
+                    d(text="Restart now").click()
+                    sysc.device_waitor(50)
+                else:
+                    sysc.back2home()
+
+
+            except AssertionError:
+                if i < attempts -1: # i steps from 0
+                    d.press("back")
+                    mt.trigger_instant_self_update_prod() #just placebo
+                    time.sleep(20)
+                    continue
+                else:
+                    raise
+
+
+        new_version_info = self.get_train_version()
+        with open(VERSION_INFO_FILE, 'r') as f:
+            old_version_info=eval(f.read()) # use eval() to covert string to it's "should be" intellgently.
+        print("\nold version info:\n")
+        print(old_version_info)
+
+        with open(VERSION_INFO_FILE, 'a') as fv:
+            fv.write("\n\n" + str(new_version_info))
+            # fv.write("\n" + json.dumps(new_version_info))
+
+        # old_version_info = json.loads(old_version_info)
+        self.assertTrue(int(new_version_info['versionCode']) > int(old_version_info['versionCode']))
+        self.assertTrue(int(new_version_info['minSdk']) >= int(old_version_info['minSdk']))
+        self.assertTrue(int(new_version_info['targetSdk']) >= int(old_version_info['targetSdk']))
+
+        # covert like '2022-01-01' into python standard date format.
+        old_date = time.strptime(old_version_info['versionName'], '%Y-%m-%d')
+        new_date = time.strptime(new_version_info['versionName'], '%Y-%m-%d')
+        self.assertTrue(new_date > old_date)
+
+        mt._install_traineng_and_capture()
+
+        new_module_info = self.get_module_list()
+        with open(MODULE_INFO_FILE, 'r') as f:
+            old_module_info = eval(f.read())
+
+        with open(MODULE_INFO_FILE, 'a') as f:
+            f.write("\n\n" + str(new_module_info) )
+
+        listc = [item for item in old_module_info if item not in new_module_info]
+        # listc should not have elements, otherwise new_module_info does not fully contain old_module_info.
+        
+        if listc:
+          self.assertFalse(listc, "old_module_info has elements not in new_module_info")
+        else: # listc is empty
+          listd = [item for item in new_module_info if item not in old_module_info]
+          print("new added modules(could be empty):\n")
+          print(listd, "\n") # listd is also allowed to be empty, since new_module_info could be equal to old_module_info.
+
+        print_whereami(self)
+
+    def check_particular_module_rollback(self, intent_name, package_name):
+
+        print_whereami_head(self)
+        try:
+            time.sleep(5)
+            while True:
+                current_activity = sysc.get_current_activity()
+                if 'launcher' in current_activity:
+                    sysc.module_killer(intent_name, package_name, 5)
+                    break
+                else:
+                    time.sleep(5)
+                    continue
+
+            time.sleep(60)
+            # old_mav = self.get_prop('module_and_version')
+            with open(MODULE_WITH_VERSION_FILE, 'r') as f:
+                old_module_and_version = eval(f.read())
+            print("\nold package names with their versions:\n", old_module_and_version)
+            old_versioncode = old_module_and_version[package_name]
+            current_mav = self.get_train_module_and_version()
+            print(current_mav)
+            current_versioncode = current_mav[package_name]
+            self.assertEqual(old_versioncode, current_versioncode, "rollback for " + package_name + " failed.")
+            # remove the key-value of specific package, the others should be equal, as they don't roallback.
+            self.assertDictEqual(old_module_and_version.pop(package_name), current_mav.pop(package_name))
+        except KeyError:
+            print(package_name + " Not found in " + str(old_module_and_version))
+        finally:
+            print_whereami_tail(self)
+
+    def test_002_train_rollback_particular_module(self):
+        testm1_intent="android.intent.action.OPEN_DOCUMENT_TREE"
+        testm1_packagename="com.google.android.documentsui"
+        testm2_intent=""
+        testm2_packagename=""
+        testm3_intent=""
+        testm3_packagename=""
+        print_whereami(self)
+
+        enable_testharness_setupenv()
+
+        module_and_version = self.get_train_module_and_version()
+        with open(MODULE_WITH_VERSION_FILE, 'w') as f:
+            f.write(str(module_and_version))
+
+        mt._install_traineng_and_capture()
+        self.assertTrue(trigger_mt_autoupdate(), "Mainline train not staged in nearly 10 minutes... Autoupdat failed!")
+        sysc.reboot_device()
+        sysc.device_waitor(50)
+
+        try:
+            # self.sideloading(BUNDLETOOL, MODULE_APKS_PATH)
+            self.check_particular_module_rollback(testm1_intent, testm1_packagename)
+            time.sleep(6)
+            # self.check_particular_module_rollback(testm2_intent, testm2_packagename)
+            # sleep(6)
+            # self.check_particular_module_rollback(testm3_intent, testm3_packagename)
+            # self.check_particular_module_rollback()
+        finally:
+            print_whereami(self)
+
+
 
 class ManualUpdateTestCase(mt.MainlineTestCase):
     """
@@ -86,22 +382,11 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
     #     self.module_and_version = {}
 
 
-    def xtest_setupenv(self):
-        sysc.enable_testharness() 
-        sysc.device_waitor(120)
-        sysc.screen_stay_on()
-        sysc.install_apk(MOBLY_APK_DIR)
-        # sysc.install_apk(PLAY_DEBUG_APK)
-        time.sleep(5)
-        sysc.connect_to_wifi(WIFI_SSID, WIFI_PASSWORD)
-        time.sleep(5)
-        sysc.back2home()
-        time.sleep(5)
-
-
-    def xtest_update_combo(self):
-
+    def test_001_manual_update(self):
         print_whereami(self)
+        enable_testharness_setupenv()
+
+        # mt.play_login(TEST_ACCOUNT, PASSWORD, WIFI_SSID, WIFI_PASSWORD)
 
         version_content = self.get_train_version()
         with open(VERSION_INFO_FILE, 'w') as f:
@@ -113,100 +398,12 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
 
         mt._install_traineng_and_capture()
 
-        try:
-            mt.is_play_latest()
-
-        except u2.UiObjectNotFoundError:
-            mt.play_login(TEST_ACCOUNT, PASSWORD, WIFI_SSID, WIFI_PASSWORD)
-            mt.is_play_latest()
-
-        sysc.back2home()
-        time.sleep(60) # wait for Play to update
-        
-        attempts = 3
-        for i in range(attempts):
-            if mt.is_play_latest(): # if Play is now up-to-date
-                time.sleep(5)
-                mt.trigger_instant_hygiene()
-                sysc.back2home()
-                time.sleep(50)
-                mt.force_stop_play() # this step counts!
-            else:
-                mt.force_stop_play()
-                time.sleep(60)
-                if i < attempts -1: # i steps from 0
-                    continue
-                else:
-                    raise
-            break
-
-        
-        time.sleep(60) # wait for autoupdate to complete its process.
-
-        # mt.trigger_instant_self_update_prod()
-
-        # print("\nchecking if new train module already staged.......\n")
-        # proc  = subprocess.Popen("adb logcat", stdout=subprocess.PIPE, universal_newlines=True, shell=True)
-        # for line in proc.stdout:
-        #     if "staged ready" in line:
-        #         print("\n********** Autoupdate - Train staged ready! ************")
-        #         proc.kill()
-
-        mt.check_if_train_staged()
-
-        sysc.back2home()
+        trigger_google_play_update_and_hygiene()
 
         self.assertTrue(mt.check_play_update_menu_shown())
 
         time.sleep(5)
-        attempts = 3
-        for i in range(attempts):
-            try:
-                mt.trigger_module_update()
-                # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SettingsSecurityEntryPoint", timeout=10.0):
-                # System update available
-                if d(textContains="Download").exists(timeout=10.0):
-                    d.screenshot(TEST_DATA_PATH + "system_update_available.png")
-                    d(text="Download & install").click()
-                    # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
-                    self.assertTrue(d(textContains="Restart").wait(timeout=120.0), "Download & install probably not started or failed in 2 minutes.")
-                    d(text="Restart now").click()
-
-                # Already silently installed updates
-                elif d(textContains="Restart").wait(timeout=10.0):
-                    d.screenshot(TEST_DATA_PATH + "train_restart_to_update.png")
-                    d(text="Restart now").click()
-                # Already up to date (installed and rebooted)
-                elif d(textContains="up to date").wait(timeout=10.0):
-                    d.screenshot(TEST_DATA_PATH + "train_up_to_date.png")
-                    print("\nNo update available, it says the device is up to date. Please check the path " + TEST_DATA_PATH + " for screenshot.")
-                    break
-                else:
-                    self.assertTrue(False, "Google Play system update window not found, probably Play Store is too old.")
-
-                sysc.device_waitor(50)
-
-                mt.trigger_module_update()
-                if d(textContains="Download").exists(timeout=10.0):
-                    d.screenshot(TEST_DATA_PATH + "system_update_available.png")
-                    d(text="Download & install").click()
-                    # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
-                    self.assertTrue(d(textContains="Restart").wait(timeout=120.0), "Download & install probably not started or failed in 2 minutes.")
-                    d(text="Restart now").click()
-                    sysc.device_waitor(50)
-                else:
-                    sysc.back2home()
-
-
-            except AssertionError:
-                if i < attempts -1: # i steps from 0
-                    d.press("back")
-                    mt.trigger_instant_self_update_prod()
-                    time.sleep(20)
-                    continue
-                else:
-                    raise
-
+        check_for_update_on_UI()
 
         new_version_info = self.get_train_version()
         with open(VERSION_INFO_FILE, 'r') as f:
@@ -228,8 +425,8 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
         new_date = time.strptime(new_version_info['versionName'], '%Y-%m-%d')
         self.assertTrue(new_date > old_date)
 
-
         mt._install_traineng_and_capture()
+
         new_module_info = self.get_module_list()
         with open(MODULE_INFO_FILE, 'r') as f:
             old_module_info = eval(f.read())
@@ -251,202 +448,193 @@ class ManualUpdateTestCase(mt.MainlineTestCase):
 
 
 
-    def test_01_enable_testharness(self):
+    # def test_01_enable_testharness(self):
 
-        sysc.enable_testharness() 
-        # # wait 2.5 minutes for the device to finish reset and reboot into desktop.
-        # sleep(150)
-        sysc.device_waitor(110)
+    #     sysc.enable_testharness() 
+    #     # # wait 2.5 minutes for the device to finish reset and reboot into desktop.
+    #     # sleep(150)
+    #     sysc.device_waitor(110)
 
+    # def test_02_calm_the_screen(self):
 
-    def test_02_calm_the_screen(self):
+    #     sysc.screen_stay_on()
 
-        sysc.screen_stay_on()
+    # def test_03_introduce_mobly(self):
 
-    def test_03_introduce_mobly(self):
+    #     sysc.install_apk(MOBLY_APK_DIR)
+    #     # sysc.install_apk(PLAY_DEBUG_APK)
+    #     time.sleep(5)
 
-        sysc.install_apk(MOBLY_APK_DIR)
-        # sysc.install_apk(PLAY_DEBUG_APK)
-        time.sleep(5)
+    # def test_04_connect_to_wifi(self):
 
+    #     sysc.connect_to_wifi(WIFI_SSID, WIFI_PASSWORD)
+    #     time.sleep(5)
 
-    def test_04_connect_to_wifi(self):
+    # def test_05_play_signin(self):
 
-        sysc.connect_to_wifi(WIFI_SSID, WIFI_PASSWORD)
-        time.sleep(5)
-
-
-    def test_05_play_signin(self):
-
-        sysc.back2home()
-        time.sleep(5)
-        mt.play_login(TEST_ACCOUNT, PASSWORD, WIFI_SSID, WIFI_PASSWORD)
-
+    #     sysc.back2home()
+    #     time.sleep(5)
+    #     mt.play_login(TEST_ACCOUNT, PASSWORD, WIFI_SSID, WIFI_PASSWORD)
 
     # def test_06_play_check_version(self):
 
     #     mt.is_play_latest()
 
+    # def test_07_train_get_version(self):
 
-    def test_07_train_get_version(self):
+    #     print_whereami(self)
+    #     # file_version_info = filename_generator("version_info")
+    #     version_content = self.get_train_version()
+    #     with open(VERSION_INFO_FILE, 'w') as f:
+    #         f.write(str(version_content))
+    #         # f.write(json.dumps(version_content))
+    #     print_whereami(self)
 
-        print_whereami(self)
-        # file_version_info = filename_generator("version_info")
-        version_content = self.get_train_version()
-        with open(VERSION_INFO_FILE, 'w') as f:
-            f.write(str(version_content))
-            # f.write(json.dumps(version_content))
-        print_whereami(self)
+    # def test_08_train_get_module_list(self):
 
-    def test_08_train_get_module_list(self):
+    #     print_whereami(self)
+    #     module_content = self.get_module_list()
+    #     with open(MODULE_INFO_FILE, 'w') as f:
+    #         f.write(str(module_content))
+    #     print_whereami(self)
 
-        print_whereami(self)
-        module_content = self.get_module_list()
-        with open(MODULE_INFO_FILE, 'w') as f:
-            f.write(str(module_content))
-        print_whereami(self)
+    # def test_09_train_trigger_instant_hygiene(self): # obselete
 
-    def test_09_train_trigger_instant_hygiene(self):
+    #     print_whereami(self)
+    #     mt._install_traineng_and_capture()
+    #     try:
+    #         mt.is_play_latest()
+    #     except u2.UiObjectNotFoundError:
+    #         mt.play_login(TEST_ACCOUNT, PASSWORD, WIFI_SSID, WIFI_PASSWORD)
+    #         mt.is_play_latest()
+    #     # mt.trigger_instant_hygiene()
+    #     # time.sleep(10)
+    #     # mt.trigger_instant_self_update()
+    #     # time.sleep(10)
+    #     mt.run_hygiene_prod()
+    #     time.sleep(60)
+    #     mt.force_stop_play()
+    #     time.sleep(5)
+    #     mt.open_google_play()
+    #     time.sleep(5)
+    #     mt.trigger_instant_self_update_prod()
+    #     sysc.back2home()
+    #     time.sleep(60)
+    #     self.assertTrue(mt.check_play_update_menu_shown())
+    #     print_whereami(self)
 
-        print_whereami(self)
-        mt._install_traineng_and_capture()
-        try:
-            mt.is_play_latest()
-        except u2.UiObjectNotFoundError:
-            mt.play_login(TEST_ACCOUNT, PASSWORD, WIFI_SSID, WIFI_PASSWORD)
-            mt.is_play_latest()
-        # mt.trigger_instant_hygiene()
-        # time.sleep(10)
-        # mt.trigger_instant_self_update()
-        # time.sleep(10)
-        mt.run_hygiene_prod()
-        time.sleep(60)
-        mt.force_stop_play()
-        time.sleep(5)
-        mt.open_google_play()
-        time.sleep(5)
-        mt.trigger_instant_self_update_prod()
-        sysc.back2home()
-        time.sleep(60)
-        self.assertTrue(mt.check_play_update_menu_shown())
-        print_whereami(self)
+    # def test_10_train_trigger_update(self):
 
-    def test_10_train_trigger_update(self):
+    #     print_whereami(self)
+    #     time.sleep(5)
+    #     attempts = 3
+    #     for i in range(attempts):
+    #         try:
+    #             mt.trigger_module_update()
+    #             # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SettingsSecurityEntryPoint", timeout=10.0):
+    #             # System update available
+    #             if d(textContains="Download").exists(timeout=10.0):
+    #                 d.screenshot(TEST_DATA_PATH + "system_update_available.png")
+    #                 d(text="Download & install").click()
+    #                 # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
+    #                 self.assertTrue(d(textContains="Restart").wait(timeout=120.0), "Download & install probably not started or failed in 2 minutes.")
+    #                 d(text="Restart now").click()
 
-        print_whereami(self)
-        time.sleep(5)
-        attempts = 3
-        for i in range(attempts):
-            try:
-                mt.trigger_module_update()
-                # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SettingsSecurityEntryPoint", timeout=10.0):
-                # System update available
-                if d(textContains="Download").exists(timeout=10.0):
-                    d.screenshot(TEST_DATA_PATH + "system_update_available.png")
-                    d(text="Download & install").click()
-                    # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
-                    self.assertTrue(d(textContains="Restart").wait(timeout=120.0), "Download & install probably not started or failed in 2 minutes.")
-                    d(text="Restart now").click()
+    #             # Already silently installed updates
+    #             elif d(textContains="Restart").wait(timeout=10.0):
+    #                 d.screenshot(TEST_DATA_PATH + "train_restart_to_update.png")
+    #                 d(text="Restart now").click()
+    #             # Already up to date (installed and rebooted)
+    #             elif d(textContains="up to date").wait(timeout=10.0):
+    #                 d.screenshot(TEST_DATA_PATH + "train_up_to_date.png")
+    #                 print("\nNo update available, it says the device is up to date. Please check the path " + TEST_DATA_PATH + " for screenshot.")
+    #                 break
+    #             else:
+    #                 self.assertTrue(False, "Google Play system update window not found, probably Play Store is too old.")
 
-                # Already silently installed updates
-                elif d(textContains="Restart").wait(timeout=10.0):
-                    d.screenshot(TEST_DATA_PATH + "train_restart_to_update.png")
-                    d(text="Restart now").click()
-                # Already up to date (installed and rebooted)
-                elif d(textContains="up to date").wait(timeout=10.0):
-                    d.screenshot(TEST_DATA_PATH + "train_up_to_date.png")
-                    print("\nNo update available, it says the device is up to date. Please check the path " + TEST_DATA_PATH + " for screenshot.")
-                    break
-                else:
-                    self.assertTrue(False, "Google Play system update window not found, probably Play Store is too old.")
+    #             sysc.device_waitor(50)
 
-                sysc.device_waitor(50)
-
-                mt.trigger_module_update()
-                if d(textContains="Download").exists(timeout=10.0):
-                    d.screenshot(TEST_DATA_PATH + "system_update_available.png")
-                    d(text="Download & install").click()
-                    # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
-                    self.assertTrue(d(textContains="Restart").wait(timeout=120.0), "Download & install probably not started or failed in 2 minutes.")
-                    d(text="Restart now").click()
-                    sysc.device_waitor(50)
-                else:
-                    sysc.back2home()
-
-
-            except AssertionError:
-                if i < attempts -1: # i steps from 0
-                    d.press("back")
-                    mt.trigger_instant_self_update()
-                    time.sleep(20)
-                    continue
-                else:
-                    raise
-            break
-            print_whereami(self)
-
-      
-
-    def test_11_train_verify_version(self):
-
-        print_whereami(self)
-        new_version_info = self.get_train_version()
-        with open(VERSION_INFO_FILE, 'r') as f:
-            old_version_info=eval(f.read()) # use eval() to covert string to it's "should be" intellgently.
-        print("\nold version info:\n")
-        print(old_version_info)
-
-        with open(VERSION_INFO_FILE, 'a') as fv:
-            fv.write("\n\n" + str(new_version_info))
-            # fv.write("\n" + json.dumps(new_version_info))
-
-        # old_version_info = json.loads(old_version_info)
-        self.assertTrue(int(new_version_info['versionCode']) > int(old_version_info['versionCode']))
-        self.assertTrue(int(new_version_info['minSdk']) >= int(old_version_info['minSdk']))
-        self.assertTrue(int(new_version_info['targetSdk']) >= int(old_version_info['targetSdk']))
-
-        # covert like '2022-01-01' into python standard date format.
-        old_date = time.strptime(old_version_info['versionName'], '%Y-%m-%d')
-        new_date = time.strptime(new_version_info['versionName'], '%Y-%m-%d')
-        self.assertTrue(new_date > old_date)
-        print_whereami(self)
+    #             mt.trigger_module_update()
+    #             if d(textContains="Download").exists(timeout=10.0):
+    #                 d.screenshot(TEST_DATA_PATH + "system_update_available.png")
+    #                 d(text="Download & install").click()
+    #                 # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
+    #                 self.assertTrue(d(textContains="Restart").wait(timeout=120.0), "Download & install probably not started or failed in 2 minutes.")
+    #                 d(text="Restart now").click()
+    #                 sysc.device_waitor(50)
+    #             else:
+    #                 sysc.back2home()
 
 
-    def test_12_train_verify_module_list(self):
+    #         except AssertionError:
+    #             if i < attempts -1: # i steps from 0
+    #                 d.press("back")
+    #                 mt.trigger_instant_self_update()
+    #                 time.sleep(20)
+    #                 continue
+    #             else:
+    #                 raise
+    #         break
+    #         print_whereami(self)
 
-        print_whereami(self)
-        mt._install_traineng_and_capture()
-        new_module_info = self.get_module_list()
-        with open(MODULE_INFO_FILE, 'r') as f:
-            old_module_info = eval(f.read())
+    # def test_11_train_verify_version(self):
 
-        with open(MODULE_INFO_FILE, 'a') as f:
-            f.write("\n\n" + str(new_module_info) )
+    #     print_whereami(self)
+    #     new_version_info = self.get_train_version()
+    #     with open(VERSION_INFO_FILE, 'r') as f:
+    #         old_version_info=eval(f.read()) # use eval() to covert string to it's "should be" intellgently.
+    #     print("\nold version info:\n")
+    #     print(old_version_info)
+
+    #     with open(VERSION_INFO_FILE, 'a') as fv:
+    #         fv.write("\n\n" + str(new_version_info))
+    #         # fv.write("\n" + json.dumps(new_version_info))
+
+    #     # old_version_info = json.loads(old_version_info)
+    #     self.assertTrue(int(new_version_info['versionCode']) > int(old_version_info['versionCode']))
+    #     self.assertTrue(int(new_version_info['minSdk']) >= int(old_version_info['minSdk']))
+    #     self.assertTrue(int(new_version_info['targetSdk']) >= int(old_version_info['targetSdk']))
+
+    #     # covert like '2022-01-01' into python standard date format.
+    #     old_date = time.strptime(old_version_info['versionName'], '%Y-%m-%d')
+    #     new_date = time.strptime(new_version_info['versionName'], '%Y-%m-%d')
+    #     self.assertTrue(new_date > old_date)
+    #     print_whereami(self)
+
+    # def test_12_train_verify_module_list(self):
+
+    #     print_whereami(self)
+    #     mt._install_traineng_and_capture()
+    #     new_module_info = self.get_module_list()
+    #     with open(MODULE_INFO_FILE, 'r') as f:
+    #         old_module_info = eval(f.read())
+
+    #     with open(MODULE_INFO_FILE, 'a') as f:
+    #         f.write("\n\n" + str(new_module_info) )
 
 
-        # difference_set = set(new_module_info) - set(old_module_info)
-        # # if the new set is greater than the old one, iow, the combined set has content
-        # # self.assertTrue(difference_set, "mainline train update probably failed, module packages not updated.")
-        # if difference_set:
-        #     print("\nmainline train update succeeds.\n")
-        #     print("new added modules:\n " + str(difference_set))
-        # else:
-        #     # print("mainline train update failed.")
-        #     self.assertTrue(False, "mainline train update probably failed, module packages not updated.")
+    #     # difference_set = set(new_module_info) - set(old_module_info)
+    #     # # if the new set is greater than the old one, iow, the combined set has content
+    #     # # self.assertTrue(difference_set, "mainline train update probably failed, module packages not updated.")
+    #     # if difference_set:
+    #     #     print("\nmainline train update succeeds.\n")
+    #     #     print("new added modules:\n " + str(difference_set))
+    #     # else:
+    #     #     # print("mainline train update failed.")
+    #     #     self.assertTrue(False, "mainline train update probably failed, module packages not updated.")
 
 
-        listc = [item for item in old_module_info if item not in new_module_info]
-        # listc should not have elements, otherwise new_module_info does not fully contain old_module_info.
+    #     listc = [item for item in old_module_info if item not in new_module_info]
+    #     # listc should not have elements, otherwise new_module_info does not fully contain old_module_info.
         
-        if listc:
-          self.assertFalse(listc, "old_module_info has elements not in new_module_info")
-        else: # listc is empty
-          listd = [item for item in new_module_info if item not in old_module_info]
-          print("new added modules(could be empty):\n")
-          print(listd, "\n") # listd is also allowed to be empty, since new_module_info could be equal to old_module_info.
+    #     if listc:
+    #       self.assertFalse(listc, "old_module_info has elements not in new_module_info")
+    #     else: # listc is empty
+    #       listd = [item for item in new_module_info if item not in old_module_info]
+    #       print("new added modules(could be empty):\n")
+    #       print(listd, "\n") # listd is also allowed to be empty, since new_module_info could be equal to old_module_info.
 
-        print_whereami(self)
-
+    #     print_whereami(self)
 
 
 class SideloadModulesTestCase(mt.MainlineTestCase):
@@ -480,6 +668,11 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
         sysc.enable_testharness() 
         # wait 2.5 minutes for the device to finish reset and reboot into desktop.
         sysc.device_waitor(120)
+
+
+    def tnd_calm_the_screen(self): # just for test/debug purpose
+
+        sysc.screen_stay_on()
 
 
     def test_02_calm_the_screen(self):
@@ -606,69 +799,22 @@ class SideloadModulesTestCase(mt.MainlineTestCase):
             print_whereami(self)
 
 
-    def check_particular_module_rollback(self, intent_name, package_name):
-
-        print_whereami_head(self)
-        try:
-            time.sleep(5)
-            current_activity = sysc.get_current_activity()
-            while True:
-                if 'launcher' in current_activity:
-                    sysc.module_killer(intent_name, package_name, 5)
-                    break
-                else:
-                    time.sleep(5)
-                    continue
-
-            time.sleep(60)
-            # old_mav = self.get_prop('module_and_version')
-            with open(MODULE_WITH_VERSION_FILE, 'r') as f:
-                old_module_and_version = eval(f.read())
-            print("\nold package names with their versions:\n", old_module_and_version)
-            old_versioncode = old_module_and_version[package_name]
-            current_mav = self.get_train_module_and_version()
-            print(current_mav)
-            current_versioncode = current_mav[package_name]
-            self.assertEqual(old_versioncode, current_versioncode, "rollback for " + package_name + " failed.")
-            # remove the key-value of specific package, the others should be equal, as they don't roallback.
-            self.assertDictEqual(old_module_and_version.pop(package_name), current_mav.pop(package_name))
-        except KeyError:
-            print(package_name + " Not found in " + str(old_module_and_version))
-        finally:
-            print_whereami_tail(self)
-
-
-    def xtest_08_train_rollback_particular_module(self):
-        testm1_intent="android.intent.action.OPEN_DOCUMENT_TREE"
-        testm1_packagename="com.google.android.documentsui"
-        testm2_intent=""
-        testm2_packagename=""
-        testm3_intent=""
-        testm3_packagename=""
-        print_whereami(self)
-        try:
-            # self.sideloading(BUNDLETOOL, MODULE_APKS_PATH)
-            self.check_particular_module_rollback(testm1_intent, testm1_packagename)
-            time.sleep(6)
-            # self.check_particular_module_rollback(testm2_intent, testm2_packagename)
-            # sleep(6)
-            # self.check_particular_module_rollback(testm3_intent, testm3_packagename)
-            # self.check_particular_module_rollback()
-        finally:
-            print_whereami(self)
-
-
 
 if __name__ == '__main__':
 
     # suite = unittest.makeSuite(ManualUpdateTestCase, 'test')
-    # suite.addTest(unittest.makeSuite(SideloadModulesTestCase))
     # suite = unittest.makeSuite(SideloadModulesTestCase, 'test')
 
     suite = unittest.TestSuite()
-    suite.addTest(ManualUpdateTestCase("xtest_setupenv"))
-    suite.addTest(ManualUpdateTestCase("test_05_play_signin"))
-    suite.addTest(ManualUpdateTestCase("xtest_update_combo"))
+
+    # suite.addTest(unittest.makeSuite(ManualUpdateTestCase, 'test'))
+    # suite.addTest(unittest.makeSuite(AutoUpdateTestCase, 'test'))
+    # suite.addTest(unittest.makeSuite(SideloadModulesTestCase, 'test'))
+
+    # suite.addTest(ManualUpdateTestCase("test_001_manual_update"))
+    # suite.addTest(AutoUpdateTestCase("test_001_autoupdate"))
+    # suite.addTest(AutoUpdateTestCase("test_002_train_rollback_particular_module"))
+    # suite.addTest(ManualUpdateTestCase("test_05_play_signin"))
     # suite.addTest(ManualUpdateTestCase("test_06_play_check_version"))
     # suite.addTest(ManualUpdateTestCase("test_07_train_get_version"))
     # suite.addTest(ManualUpdateTestCase("test_08_train_get_module_list"))
@@ -676,8 +822,9 @@ if __name__ == '__main__':
     # suite.addTest(ManualUpdateTestCase("test_10_train_trigger_update"))
     # suite.addTest(ManualUpdateTestCase("test_11_train_verify_version"))
     # suite.addTest(ManualUpdateTestCase("test_12_train_verify_module_list"))
+    # suite.addTest(SideloadModulesTestCase("test_02_calm_the_screen"))
 
-    runner = unittest.TextTestRunner()
+    
     # runner.run(suite)
 
     # c1 = ManualUpdateTestCase()
@@ -689,19 +836,32 @@ if __name__ == '__main__':
     # c2.test_05_train_get_module_and_version()
     # c2.sideload_modules(BUNDLETOOL, MODULE_APKS_PATH)
     # c2.test_07_train_rollback_modules()
-    # c2.xtest_08_train_rollback_particular_module()
+    # c2.test_08_train_rollback_particular_module()
 
 
     if args.config:
         cfg = ConfigParser()
         cfg.read(args.config)
-        testrunner = cfg['Testsuite']['runner']
+        testclass = cfg['Testsuite']['TestClass']
+        testclass_l = eval(testclass)
+        for tc in testclass_l:
+            suite.addTest(unittest.makeSuite(tc, 'tnd'))
+        testrunner = cfg['Testsuite']['Runner']
         if testrunner in 'HTMLTestRunner':      
-            with(open('test/result.html', 'wb')) as fp:
+            with(open(TEST_DATA_PATH + 'result.html', 'wb')) as fp:
                 runner = HTMLTestRunner(
                     stream=fp,
                     title='Mainline Update Test Report',
                     description='Try, no give up.'
                 )
-        
-    runner.run(suite)
+                runner.run(suite)
+                fp.close()
+        else:
+            runner=unittest.TextTestRunner()
+
+
+    else:
+        runner = unittest.TextTestRunner()
+        suite.addTest(unittest.makeSuite(SideloadModulesTestCase, 'test'))
+        runner.run(suite)
+

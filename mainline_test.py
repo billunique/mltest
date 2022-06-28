@@ -297,12 +297,33 @@ def _install_traineng_and_capture():
 def check_if_train_staged():
     print("\nchecking if new train module has been staged.......\n")
     proc  = subprocess.Popen("adb logcat -v brief", stdout=subprocess.PIPE, universal_newlines=True, shell=True)
-    for line in proc.stdout:
-        if all(x in line for x in ["staged ready", "mainline.telemetry"]): #UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0
-            print("\n********** Autoupdate - Train telemetry staged ready! ************")
-        if all(x in line for x in ["staged ready", "mainline_train_primary"]):
-            print("\n********** Autoupdate - Train primary staged ready! ************")
+    attempts = 3
+    for i in range(attempts):
+        try:
+            # outs, errs = proc.communicate(timeout=200)
+            for line in proc.stdout:
+                if all(x in line for x in ["staged ready", "mainline.telemetry"]): #UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0
+                    print("\n********** Autoupdate - Train telemetry staged ready! ************")
+                    # if "kso" in line:
+                    #     print("\nThis time just Telemetry train staged, and no more Primary train!\n")
+                    #     # raise AssertionError("Primary train autoupdate failed.")
+                    #     break
+                if all(x in line for x in ["staged ready", "mainline_train_primary"]):
+                    print("\n********** Autoupdate - Train primary staged ready! ************")
+                    proc.kill()
+                    return True
+
+        except: #TimeoutExpired
             proc.kill()
+            if i < attempts -1: # i steps from 0
+                trigger_instant_hygiene()
+                time.sleep(10)
+                force_stop_play()
+                continue
+            else:
+                # raise AssertionError("Primary train autoupdate failed.")
+                return False
+        break
 
 
 def test_if_train_staged():
@@ -313,7 +334,40 @@ def test_if_train_staged():
         print("\n********** Autoupdate - Train telemetry staged ready! ************")
     if all(x in proc for x in ["staged ready", "mainline_train_primary"]):
         print("\n********** Autoupdate - Train primary staged ready! ************")
+        return True
 
+
+def see_if_train_staged():
+    print("\nchecking if new train module already staged.......\n")
+    # proc  = subprocess.Popen("adb logcat -t 100000", stdout=subprocess.PIPE, universal_newlines=True, shell=True)
+    tries = 3
+    times = 12
+    for y in range(tries):
+        for i in range(times):
+            proc = os.popen("adb logcat -t 100000").read()
+            if all(x in proc for x in ["staged ready", "mainline.telemetry"]): #UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0
+                print("\n********** Autoupdate - Train telemetry staged ready! ************")
+            if all(x in proc for x in ["staged ready", "mainline_train_primary"]):
+                print("\n********** Autoupdate - Train primary staged ready! ************")
+                return True
+                # break
+            else:
+                if i < times -1: # i steps from 0
+                    time.sleep(10)
+                    continue
+                else:
+                    if y < tries-1:
+                        time.sleep(2)
+                        open_google_play()
+                        time.sleep(5)
+                        trigger_instant_hygiene()
+                        time.sleep(10)
+                        force_stop_play()
+                        time.sleep(30)
+                        continue
+                    else:
+                        print("\nMainline Autoupdate failed!")
+                        return False
 
 
 def trigger_module_update():
@@ -470,8 +524,9 @@ if __name__ == '__main__':
     # _install_traineng_and_capture()
     # check_if_train_staged()
     # test_if_train_staged()
-    open_play_account_menu()
-    
+    see_if_train_staged()
+    # open_play_account_menu()
+
     # is_play_latest()
     # play_login(TEST_ACCOUNT, PASSWORD)
     # c1 = MainlineTestCase()
