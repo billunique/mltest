@@ -172,7 +172,7 @@ def check_for_update_on_UI():
 
             mt.trigger_module_update()
             if d(textContains="Download").exists(timeout=10.0):
-                d.screenshot(TEST_DATA_PATH + "system_update_available.png")
+                d.screenshot(TEST_DATA_PATH + "system_update_available" + "_" + time_format + ".png")
                 d(text="Download & install").click()
                 # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
                 assert (d(textContains="Restart").wait(timeout=120.0)), "Download & install probably not started or failed in 2 minutes."
@@ -215,53 +215,8 @@ class AutoUpdateTestCase(mt.MainlineTestCase):
         self.assertTrue(mt.check_play_update_menu_shown())
 
         time.sleep(5)
-        attempts = 3
-        for i in range(attempts):
-            try:
-                mt.trigger_module_update()
-                # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SettingsSecurityEntryPoint", timeout=10.0):
-                # System update available
-                if d(textContains="Download").exists(timeout=10.0):
-                    d.screenshot(TEST_DATA_PATH + "system_update_available.png")
-                    d(text="Download & install").click()
-                    # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
-                    self.assertTrue(d(textContains="Restart").wait(timeout=120.0), "Download & install probably not started or failed in 2 minutes.")
-                    d(text="Restart now").click()
-
-                # Already silently installed updates
-                elif d(textContains="Restart").wait(timeout=10.0):
-                    d.screenshot(TEST_DATA_PATH + "train_restart_to_update.png")
-                    d(text="Restart now").click()
-                # Already up to date (installed and rebooted)
-                elif d(textContains="up to date").wait(timeout=10.0):
-                    d.screenshot(TEST_DATA_PATH + "train_up_to_date.png")
-                    print("\nNo update available, it says the device is up to date. Please check the path " + TEST_DATA_PATH + " for screenshot.")
-                    break
-                else:
-                    self.assertTrue(False, "Google Play system update window not found, probably Play Store is too old.")
-
-                sysc.device_waitor(50)
-
-                mt.trigger_module_update()
-                if d(textContains="Download").exists(timeout=10.0):
-                    d.screenshot(TEST_DATA_PATH + "system_update_available.png")
-                    d(text="Download & install").click()
-                    # if d.wait_activity("com.google.android.finsky.systemupdateactivity.SystemUpdateActivity", timeout=10.0):
-                    self.assertTrue(d(textContains="Restart").wait(timeout=120.0), "Download & install probably not started or failed in 2 minutes.")
-                    d(text="Restart now").click()
-                    sysc.device_waitor(50)
-                else:
-                    sysc.back2home()
-
-
-            except AssertionError:
-                if i < attempts -1: # i steps from 0
-                    d.press("back")
-                    mt.trigger_instant_self_update_prod() #just placebo
-                    time.sleep(20)
-                    continue
-                else:
-                    raise
+        
+        check_for_update_on_UI()
 
 
         new_version_info = self.get_train_version()
@@ -366,6 +321,11 @@ class AutoUpdateTestCase(mt.MainlineTestCase):
             # self.check_particular_module_rollback()
         finally:
             print_whereami(self)
+
+
+    def tnd_calm_the_screen(self): # just for test/debug purpose
+
+        sysc.screen_stay_on()
 
 
 
@@ -845,19 +805,19 @@ if __name__ == '__main__':
         testclass = cfg['Testsuite']['TestClass']
         testclass_l = eval(testclass)
         for tc in testclass_l:
-            suite.addTest(unittest.makeSuite(tc, 'tnd'))
+            suite.addTest(unittest.makeSuite(tc, 'test'))
         testrunner = cfg['Testsuite']['Runner']
         if testrunner in 'HTMLTestRunner':      
-            with(open(TEST_DATA_PATH + 'result.html', 'wb')) as fp:
+            with(open(TEST_DATA_PATH + 'result' + "_" + time_format + '.html', 'wb')) as fp:
                 runner = HTMLTestRunner(
                     stream=fp,
                     title='Mainline Update Test Report',
                     description='Try, no give up.'
                 )
                 runner.run(suite)
-                fp.close()
         else:
             runner=unittest.TextTestRunner()
+            runner.run(suite)
 
 
     else:

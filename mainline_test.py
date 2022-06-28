@@ -20,6 +20,9 @@ PASSWORD='G00gl3test'
 WIFI_SSID='GoogleGuestPSK'
 WIFI_PASSWORD='pUp3EkaP'
 
+TEST_DATA_PATH = "./test/data/"
+time_format = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S.%f")
+
 d = u2.connect()
 
 
@@ -91,11 +94,11 @@ def is_play_latest():
             d(text="Play Store version").click()
             if d(textContains="A new version").wait(timeout=3.0):
                 print('\nPlay store need to be updated.')
-                d.screenshot("test_data/play_store_need_update.png")
+                d.screenshot(TEST_DATA_PATH + "/play_store_need_update" + "_" + time_format + ".png")
                 uptodate = False
             else:
                 print("\nPlay store is already up-to-date.")
-                d.screenshot("test_data/play_store_latest.png")
+                d.screenshot(TEST_DATA_PATH + "/play_store_latest" + "_" + time_format + ".png")
                 uptodate = True
             if d(text="Got it").exists():
                 d(text="Got it").click()
@@ -287,10 +290,10 @@ def _install_traineng_and_capture():
         time.sleep(3)
         open_traineng()
         time.sleep(2)
-        time_format = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S.%f")
-        d.screenshot('./test_data/traineng1_' + time_format + '.png')
+        # time_format = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S.%f")
+        d.screenshot(TEST_DATA_PATH + '/traineng1_' + time_format + '.png')
         d(scrollable=True).fling.toEnd()
-        d.screenshot('./test_data/traineng2_' + time_format + '.png')
+        d.screenshot(TEST_DATA_PATH + '/traineng2_' + time_format + '.png')
         sysc.back2home()
 
 
